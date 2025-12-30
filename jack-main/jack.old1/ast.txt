@@ -1,0 +1,6 @@
+tag=root data=
+  tag=class data=Main
+    tag=function data=c
+      tag=void data=ld
+        tag=void data=ld
+          tag=identifier data=main

@@ -1,0 +1,615 @@
+function DrawIcosian.new 0
+push constant 1
+call Memory.alloc 1
+pop pointer 0
+push constant 20
+call PointVector.new 1
+pop this 0
+push this 0
+push constant 0
+push constant 65
+push constant 31
+push constant 1
+push constant 7
+push constant 4
+push constant 8
+push constant 1
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 1
+push constant 192
+push constant 31
+push constant 0
+push constant 2
+push constant 9
+push constant 24
+push constant 1
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 2
+push constant 231
+push constant 152
+push constant 3
+push constant 1
+push constant 11
+push constant 30
+push constant 13
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 3
+push constant 128
+push constant 227
+push constant 2
+push constant 4
+push constant 13
+push constant 16
+push constant 21
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 4
+push constant 25
+push constant 152
+push constant 0
+push constant 5
+push constant 3
+push constant 2
+push constant 13
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 5
+push constant 60
+push constant 141
+push constant 4
+push constant 14
+push constant 6
+push constant 9
+push constant 12
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 6
+push constant 80
+push constant 103
+push constant 5
+push constant 7
+push constant 16
+push constant 8
+push constant 9
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 7
+push constant 86
+push constant 60
+push constant 6
+push constant 8
+push constant 0
+push constant 11
+push constant 6
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 8
+push constant 128
+push constant 68
+push constant 7
+push constant 9
+push constant 17
+push constant 16
+push constant 5
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 9
+push constant 171
+push constant 60
+push constant 1
+push constant 8
+push constant 10
+push constant 20
+push constant 6
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 10
+push constant 177
+push constant 103
+push constant 9
+push constant 11
+push constant 18
+push constant 23
+push constant 9
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 11
+push constant 197
+push constant 141
+push constant 10
+push constant 12
+push constant 2
+push constant 23
+push constant 12
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 12
+push constant 158
+push constant 160
+push constant 11
+push constant 13
+push constant 19
+push constant 20
+push constant 15
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 13
+push constant 128
+push constant 191
+push constant 12
+push constant 14
+push constant 3
+push constant 16
+push constant 16
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 14
+push constant 98
+push constant 160
+push constant 13
+push constant 5
+push constant 15
+push constant 12
+push constant 15
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 15
+push constant 109
+push constant 144
+push constant 14
+push constant 16
+push constant 19
+push constant 14
+push constant 12
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 16
+push constant 98
+push constant 109
+push constant 15
+push constant 17
+push constant 6
+push constant 13
+push constant 10
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 17
+push constant 128
+push constant 81
+push constant 16
+push constant 18
+push constant 8
+push constant 16
+push constant 8
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 18
+push constant 159
+push constant 109
+push constant 17
+push constant 19
+push constant 10
+push constant 18
+push constant 10
+call PointVector.set 9
+pop temp 0
+push this 0
+push constant 19
+push constant 147
+push constant 144
+push constant 15
+push constant 18
+push constant 12
+push constant 17
+push constant 12
+call PointVector.set 9
+pop temp 0
+push pointer 0
+return
+function DrawIcosian.plotPoints 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 20
+lt
+not
+if-goto WHILE_END0
+push this 0
+push local 0
+call PointVector.getPoint 2
+pop local 1
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 1
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 3
+call Screen.drawCircle 3
+pop temp 0
+push argument 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 0
+push local 0
+call PointVector.getCharPos 2
+pop local 2
+push constant 1
+push local 2
+add
+pop pointer 1
+push that 0
+push constant 0
+push local 2
+add
+pop pointer 1
+push that 0
+call Output.moveCursor 2
+pop temp 0
+push constant 65
+push local 0
+add
+call Output.printChar 1
+pop temp 0
+label IF_FALSE0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function DrawIcosian.plotLine 2
+push argument 0
+pop pointer 0
+push this 0
+push argument 1
+call PointVector.getPoint 2
+pop local 0
+push this 0
+push argument 2
+call PointVector.getPoint 2
+pop local 1
+push constant 0
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 1
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 1
+push local 1
+add
+pop pointer 1
+push that 0
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+return
+function DrawIcosian.drawDashedLine 2
+push argument 0
+pop pointer 0
+push this 0
+push argument 1
+call PointVector.getPoint 2
+pop local 0
+push this 0
+push argument 2
+call PointVector.getPoint 2
+pop local 1
+push pointer 0
+push constant 0
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 1
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 1
+push local 1
+add
+pop pointer 1
+push that 0
+call DrawIcosian.drawMid 5
+pop temp 0
+push constant 0
+return
+function DrawIcosian.draw 1
+push argument 0
+pop pointer 0
+push pointer 0
+push constant 0
+not
+call DrawIcosian.plotPoints 2
+pop temp 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 19
+lt
+not
+if-goto WHILE_END0
+push pointer 0
+push local 0
+push local 0
+push constant 1
+add
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push pointer 0
+push constant 0
+push constant 4
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 0
+push constant 7
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 1
+push constant 9
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 2
+push constant 11
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 3
+push constant 13
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 8
+push constant 17
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 5
+push constant 14
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 12
+push constant 19
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 10
+push constant 18
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 6
+push constant 16
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push pointer 0
+push constant 15
+push constant 19
+call DrawIcosian.drawDashedLine 3
+pop temp 0
+push constant 0
+return
+function DrawIcosian.isNeighbour 1
+push argument 0
+pop pointer 0
+push this 0
+push argument 1
+call PointVector.getNeighbours 2
+pop local 0
+push constant 0
+push local 0
+add
+pop pointer 1
+push that 0
+push argument 2
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+return
+goto IF_END0
+label IF_FALSE0
+push constant 1
+push local 0
+add
+pop pointer 1
+push that 0
+push argument 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+return
+goto IF_END1
+label IF_FALSE1
+push constant 2
+push local 0
+add
+pop pointer 1
+push that 0
+push argument 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+not
+return
+goto IF_END2
+label IF_FALSE2
+push constant 0
+return
+label IF_END2
+label IF_END1
+label IF_END0
+function DrawIcosian.drawMid 3
+push argument 0
+pop pointer 0
+push pointer 0
+push argument 1
+push argument 2
+push argument 3
+push argument 4
+call DrawIcosian.length 5
+pop local 2
+push local 2
+push constant 10
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push argument 1
+push argument 3
+add
+push constant 2
+call Math.divide 2
+pop local 0
+push argument 2
+push argument 4
+add
+push constant 2
+call Math.divide 2
+pop local 1
+push local 0
+push local 1
+call Screen.drawPixel 2
+pop temp 0
+push pointer 0
+push argument 1
+push argument 2
+push local 0
+push local 1
+call DrawIcosian.drawMid 5
+pop temp 0
+push pointer 0
+push local 0
+push local 1
+push argument 3
+push argument 4
+call DrawIcosian.drawMid 5
+pop temp 0
+push constant 0
+return
+function DrawIcosian.length 3
+push argument 0
+pop pointer 0
+push argument 1
+push argument 3
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 1
+push argument 3
+sub
+pop local 0
+goto IF_END0
+label IF_FALSE0
+push argument 3
+push argument 1
+sub
+pop local 0
+label IF_END0
+push argument 2
+push argument 4
+gt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push argument 2
+push argument 4
+sub
+pop local 1
+goto IF_END1
+label IF_FALSE1
+push argument 4
+push argument 2
+sub
+pop local 1
+label IF_END1
+push local 0
+push local 0
+call Math.multiply 2
+push local 1
+push local 1
+call Math.multiply 2
+add
+call Math.sqrt 1
+pop local 2
+push local 2
+return
+function DrawIcosian.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call PointVector.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return

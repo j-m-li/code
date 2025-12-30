@@ -1,0 +1,8 @@
+class MathsToo {
+	function int mod(int a, int b) {
+		var int i;
+		let i = a / b;
+		return a - (i * b);
+	}
+}
+

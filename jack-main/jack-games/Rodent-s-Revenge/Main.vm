@@ -1,0 +1,30 @@
+function Main.main 2
+call RodentGame.init 0
+pop temp 0
+call Block.init 0
+pop temp 0
+call Mouse.init 0
+pop temp 0
+call Cat.init 0
+pop temp 0
+push constant 0
+not
+pop local 1
+label WHILE_EXP0
+push local 1
+not
+if-goto WHILE_END0
+call RodentGame.new 0
+pop local 0
+push local 0
+call RodentGame.run 1
+pop temp 0
+push local 0
+call RodentGame.dispose 1
+pop temp 0
+call RodentGame.restart 0
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return

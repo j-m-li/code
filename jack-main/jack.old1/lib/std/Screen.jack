@@ -1,0 +1,46 @@
+
+class Screen {
+	function void init() {
+#py 	global tk
+#py 	tk = None
+		return;
+	}
+
+	function void deInit() {
+		return;
+	}
+
+	function void clearScreen() {
+#py 	global tk
+#py 	if (tk == None):
+#py 		tk = tkinter.Tk()
+#py 		p = tkinter.PhotoImage(file ="screen.gif")
+#py 		lbl = tkinter.Label(tk, image = p)
+#py 		lbl.image = p
+#py 		lbl.grid(row=0, column=0)
+
+		return;
+	}
+
+	function void setColor(boolean b) {
+		return;
+	}
+
+	function void drawPixel(int x, int y) {
+		return;
+	}
+
+	function void drawLine(int x, int y, int x2, int y2) {
+		return;
+	}
+
+	function void drawRectangle(int x, int y, int x2, int y2) {
+		return;
+	}
+
+	function void drawCircle(int x, int y, int r) {
+		return;
+	}
+
+}
+

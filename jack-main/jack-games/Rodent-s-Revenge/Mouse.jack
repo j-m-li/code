@@ -1,0 +1,415 @@
+
+
+/** Implements the mouse in the Rodent's Revenge game. */
+class Mouse {
+
+	static int UP, DOWN, LEFT, RIGHT;	// movement directions of the mouse.
+	static int BLOCK_SIZE;				// size of a game block's edge, in pixels
+	static int SCREEN_BASE_ADDRESS;		// base address of the Hack-platform's screen
+	static int CHEESE;					// The enum that represents the status of a cheese-turned cat.
+
+	field int x, y;						// screen location of the mouse's top-left corner
+	field int blockXCord, blockYCord;	// screen location of a pushed block
+	field boolean pushedBlock;			// true iff the mouse pushed a block during movement
+	field boolean blockPushedCat;		// true iff a block that was pushed by the mouse pushed a cat.
+	field boolean vertical;				// true: the mouse moved up\down. false: left\right
+
+	/** Initializes the static variables. */
+	function void init() {
+		let UP = 1;
+		let DOWN = 2;
+		let LEFT = 3;
+		let RIGHT = 4;
+		let BLOCK_SIZE = 16;
+		let SCREEN_BASE_ADDRESS = 16384;
+		let CHEESE = 2;
+		return; 
+	}
+
+	/** Constructs a new mouse with the default location. */
+	constructor Mouse new() {
+		let x = 240;
+		let y = 112;
+		do draw();
+		return this;
+	}
+
+	/** Disposes this mouse. */
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** Returns the mouse's x coordinate. */
+	method int getX() {
+		return x;
+	}
+
+	/** Returns the mouse's y coordinate. */
+	method int getY() {
+		return y;
+	}
+
+	/** Checks if the mouse is pushing a block upwards.
+		Returns -2 if the mouse can't move.
+		Returns -1 if the mouse can move, but he dosen't push any block.
+		In case the mouse can move, and will push a block, returns the y coordinate of
+		the square that should be drawn.			*/
+	method boolean canMoveUpwards(Cat cat0, Cat cat1) {
+		if (y = 0) {
+			return false;
+		}
+		if (Block.blockInLocation(x, y - 16)) {		// if there is a game block above the mouse.
+			let blockYCord = y - 32;
+			if (blockYCord < 0) {
+					return false;
+			}
+			while (Block.blockInLocation(x, blockYCord)) {
+				let blockYCord = blockYCord - 16;
+				if (blockYCord < 0) {
+					return false;
+				}
+			}
+			if (blockMovedCat(cat0)) {
+				if (cat0.canMove()) {
+					let pushedBlock = true;
+					do cat0.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat0.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat0.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			if (blockMovedCat(cat1)) {
+				if (cat1.canMove()) {
+					let pushedBlock = true;
+					do cat1.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat1.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat1.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			let pushedBlock = true;
+		}
+		return true;
+	}
+
+	/** Checks if the mouse is pushing a block downwards.
+		Returns -2 if the mouse can't move.
+		Returns -1 if the mouse can move, but he dosen't push any block.
+		In case the mouse can move, and will push a block, returns the y coordinate of
+		the square that should be drawn.			*/
+	method boolean canMoveDownwards(Cat cat0, Cat cat1) {
+		if (y = 240) {
+			return false;
+		}
+		if (Block.blockInLocation(x, y + 16)) {		// if there is a game block below the mouse.
+			let blockYCord = y + 32;
+			if (blockYCord > 240) {
+					return false;
+			}
+			while (Block.blockInLocation(x, blockYCord)) {
+				let blockYCord = blockYCord + 16;
+				if (blockYCord > 240) {
+					return false;
+				}
+			}
+			if (blockMovedCat(cat0)) {
+				if (cat0.canMove()) {
+					let pushedBlock = true;
+					do cat0.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat0.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat0.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			if (blockMovedCat(cat1)) {
+				if (cat1.canMove()) {
+					let pushedBlock = true;
+					do cat1.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat1.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat1.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			let pushedBlock = true;
+		}
+		return true;
+	}
+
+	/** Checks if the mouse is pushing a block leftwards.
+		Returns -2 if the mouse can't move.
+		Returns -1 if the mouse can move, but he dosen't push any block.
+		In case the mouse can move, and will push a block, returns the x coordinate of
+		the square that should be drawn.			*/
+	method boolean canMoveLeftwards(Cat cat0, Cat cat1) {
+		if (x = 0) {
+			return false;
+		}
+		if (Block.blockInLocation(x - 16, y)) {		// if there is a game block to the left of the mouse.
+			let blockXCord = x - 32;
+			if (blockXCord < 0) {
+					return false;
+			}
+			while (Block.blockInLocation(blockXCord, y)) {
+				let blockXCord = blockXCord - 16;
+				if (blockXCord < 0) {
+					return false;
+				}
+			}
+			if (blockMovedCat(cat0)) {
+				if (cat0.canMove()) {
+					let pushedBlock = true;
+					do cat0.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat0.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat0.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			if (blockMovedCat(cat1)) {
+				if (cat1.canMove()) {
+					let pushedBlock = true;
+					do cat1.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat1.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat1.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			let pushedBlock = true;
+		}
+		return true;
+	}
+
+	/** Checks if the mouse is pushing a block rightwards.
+		Returns -2 if the mouse can't move.
+		Returns -1 if the mouse can move, but he dosen't push any block.
+		In case the mouse can move, and will push a block, returns the x coordinate of
+		the square that should be drawn.			*/
+	method boolean canMoveRightwards(Cat cat0, Cat cat1) {
+		if (x = 496) {
+			return false;
+		}
+		if (Block.blockInLocation(x + 16, y)) {		// if there is a game block to the right of the mouse.
+			let blockXCord = x + 32;
+			if (blockXCord > 496) {
+					return false;
+			}
+			while (Block.blockInLocation(blockXCord, y)) {
+				let blockXCord = blockXCord + 16;
+				if (blockXCord > 496) {
+					return false;
+				}
+			}
+			if (blockMovedCat(cat0)) {
+				if (cat0.canMove()) {
+					let pushedBlock = true;
+					do cat0.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat0.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat0.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			if (blockMovedCat(cat1)) {
+				if (cat1.canMove()) {
+					let pushedBlock = true;
+					do cat1.setPushedByMouse(true);
+					return true;
+				}
+				else {
+					if (cat1.getStatus() = CHEESE) {
+						let pushedBlock = true;
+						do cat1.setSquashedToTrue();
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			let pushedBlock = true;
+		}
+		return true;
+	}
+
+	/** Draws the mouse on the screen. */
+	method void draw() {
+		var int memAddress;
+		let memAddress = SCREEN_BASE_ADDRESS + (32 * y) + Math.divide(x, 16);
+		do Memory.poke(memAddress+0, 6);
+		do Memory.poke(memAddress+32, 8);
+		do Memory.poke(memAddress+64, 8);
+		do Memory.poke(memAddress+96, 8);
+		do Memory.poke(memAddress+128, 6534);
+		do Memory.poke(memAddress+160, 9793);
+		do Memory.poke(memAddress+192, 10337);
+		do Memory.poke(memAddress+224, 4241);
+		do Memory.poke(memAddress+256, 8457);
+		do Memory.poke(memAddress+288, 18437);
+		do Memory.poke(memAddress+320, -32765);
+		do Memory.poke(memAddress+352, -1022);
+		do Memory.poke(memAddress+384, 1026);
+		do Memory.poke(memAddress+416, 2046);
+		do Memory.poke(memAddress+448, 2577);
+		do Memory.poke(memAddress+480, 4641);
+		return;
+	}
+
+	/** Erases the mouse from the screen. */
+	method void erase() {
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, x + BLOCK_SIZE - 1, y + BLOCK_SIZE - 1);
+		return;
+	}
+
+	/** Returns true if a block that was pushed by the mouse - pushed a cat.
+		Retruns false otherwise. */
+	method boolean blockMovedCat(Cat cat) {
+		if (vertical) {
+			if (cat.inLocation(x, blockYCord)) {
+				return true;
+			}
+			return false;
+		}
+		if (cat.inLocation(blockXCord, y)) {
+			return true;
+		}
+		return false;
+	}
+
+	/** This method should be called after calling the move method.
+		Retruns true if the mouse has pushed a block during its movement.
+		Retruns false otherwise. */
+	method boolean pushedBlock() {
+		return pushedBlock;
+	}
+
+	/** This method should only be called if 'pushedBlock' is true.
+		Draws the block that was pushed by the mouse in the appropriate location. */
+	method void drawPushedBlock() {
+		do Screen.setColor(true);
+		if (vertical) {
+			do Screen.drawRectangle(x, blockYCord, x + BLOCK_SIZE - 1, blockYCord + BLOCK_SIZE - 1);
+			return;
+		}
+		do Screen.drawRectangle(blockXCord, y, blockXCord + BLOCK_SIZE - 1, y + BLOCK_SIZE - 1);
+		return;
+	}
+
+	/** Moves the mouse in the supplied direction. */
+	method void move(int direction, Cat cat0, Cat cat1) {
+		let pushedBlock = false;		// Resets state from previous call.
+		let vertical = false;
+		let blockPushedCat = false;
+		
+		if (direction = UP) {
+			let vertical = true;
+			do moveUp(cat0, cat1);
+			return;
+		}
+		if (direction = DOWN) {
+			let vertical = true;
+			do moveDown(cat0, cat1);
+			return;
+		}
+		if (direction = LEFT) {
+			do moveLeft(cat0, cat1);
+			return;
+		}
+		if (direction = RIGHT) {
+			do moveRight(cat0, cat1);
+			return;
+		}
+		return;
+	}
+
+	/** Moves the mouse up by 16 pixels. */
+	method void moveUp(Cat cat0, Cat cat1) {
+		if (canMoveUpwards(cat0, cat1)) {
+			do erase();
+			let y = y - 16;
+		}
+		return;
+	}
+
+	/** Moves the mouse down by 16 pixels. */
+	method void moveDown(Cat cat0, Cat cat1) {
+		if (canMoveDownwards(cat0, cat1)) {
+			do erase();
+			let y = y + 16;
+		}
+		return;
+	}
+
+	/** Moves the mouse left by 16 pixels. */
+	method void moveLeft(Cat cat0, Cat cat1) {
+		if (canMoveLeftwards(cat0, cat1)) {
+			do erase();
+			let x = x - 16;
+		}
+		return;
+	}
+
+	/** Moves the mouse right by 16 pixels. */
+	method void moveRight(Cat cat0, Cat cat1) {
+		if (canMoveRightwards(cat0, cat1)) {
+			do erase();
+			let x = x + 16;
+		}
+		return;
+	}
+}

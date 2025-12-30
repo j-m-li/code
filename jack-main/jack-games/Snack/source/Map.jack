@@ -1,0 +1,9 @@
+class Map {
+    function void DrawGrid() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(0, 236, 511, 237);
+        return;
+    }
+}
+
+/**drawRectantle(x_coordinate, y_coordinate, width, height)**/

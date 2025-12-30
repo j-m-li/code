@@ -1,0 +1,13 @@
+function Map.DrawGrid 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push constant 0
+push constant 236
+push constant 511
+push constant 237
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return

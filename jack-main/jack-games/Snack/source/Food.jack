@@ -1,0 +1,158 @@
+class Food {
+    field int posX, posY, size, sprite;
+    field int memAddress;
+    constructor Food new(int x, int y) {
+        let posX = x;
+        let posY = y;
+        if (posX < 10) {
+            let posX = posX + 5;
+        }
+        if (posY < 10) {
+            let posY = posY + 5;
+        }
+        let size = 16;
+        let sprite = Random.randRange(3);
+        do drawPixel(true);
+        return this;
+    }
+    method void dispose() { // Dealloc the object from memory
+        do Memory.deAlloc(this);
+        return;
+    }
+    method int getX() {
+        return posX;
+    } 
+    method int getY() {
+        return posY;
+    }  
+    method int getWidth() {
+        return size;
+    } 
+    method int getHeight() {
+        return size;
+    } 
+    method int getType() {
+        return sprite;
+    }
+    method void drawFood() { // Draws the pixels on screen
+        /* If position is close to walls, add 3 pixels to its value to avoid overlapping */
+        if (posX < 10) {
+            let posX = posX + 5;
+        }
+        if (posY < 10) {
+            let posY = posY + 5;
+        }
+        /* END */
+        do Screen.drawRectangle(posX, posY, posX+size, posY+size);
+        return;
+    }
+    method void draw() { 
+        do Screen.setColor(true);
+        do drawFood();
+        return;
+    }
+    method void drawPixel(boolean color) {
+        let memAddress = 16384 + ((posY * 32) + (posX / 16));
+        if (~color) {
+            do Memory.poke(memAddress+0, 0);
+            do Memory.poke(memAddress+32, 0);
+            do Memory.poke(memAddress+64, 0);
+            do Memory.poke(memAddress+96, 0);
+            do Memory.poke(memAddress+128, 0);
+            do Memory.poke(memAddress+160, 0);
+            do Memory.poke(memAddress+192, 0);
+            do Memory.poke(memAddress+224, 0);
+            do Memory.poke(memAddress+256, 0);
+            do Memory.poke(memAddress+288, 0);
+            do Memory.poke(memAddress+320, 0);
+            do Memory.poke(memAddress+352, 0);
+            do Memory.poke(memAddress+384, 0);
+            do Memory.poke(memAddress+416, 0);
+            do Memory.poke(memAddress+448, 0);
+            do Memory.poke(memAddress+480, 0);
+            return;
+        }
+        if ((sprite = 0) & color) {
+            do Memory.poke(memAddress+0, 1984);
+            do Memory.poke(memAddress+32, 2096);
+            do Memory.poke(memAddress+64, 1032);
+            do Memory.poke(memAddress+96, 2052);
+            do Memory.poke(memAddress+128, 4104);
+            do Memory.poke(memAddress+160, 2052);
+            do Memory.poke(memAddress+192, 4098);
+            do Memory.poke(memAddress+224, 8196);
+            do Memory.poke(memAddress+256, 8194);
+            do Memory.poke(memAddress+288, 8188);
+            do Memory.poke(memAddress+320, 4604);
+            do Memory.poke(memAddress+352, 4604);
+            do Memory.poke(memAddress+384, 2296);
+            do Memory.poke(memAddress+416, 2296);
+            do Memory.poke(memAddress+448, 2168);
+            do Memory.poke(memAddress+480, 2032);
+        }
+        if ((sprite = 1) & color) {
+            do Memory.poke(memAddress+0, 896);
+            do Memory.poke(memAddress+32, 3168);
+            do Memory.poke(memAddress+64, 6168);
+            do Memory.poke(memAddress+96, 8196);
+            do Memory.poke(memAddress+128, 16482);
+            do Memory.poke(memAddress+160, 16434);
+            do Memory.poke(memAddress+192, -24571);
+            do Memory.poke(memAddress+224, -24571);
+            do Memory.poke(memAddress+256, -25543);
+            do Memory.poke(memAddress+288, 17346);
+            do Memory.poke(memAddress+320, -32767);
+            do Memory.poke(memAddress+352, -16381);
+            do Memory.poke(memAddress+384, -20467);
+            do Memory.poke(memAddress+416, 20466);
+            do Memory.poke(memAddress+448, 12300);
+            do Memory.poke(memAddress+480, 4080);
+        }
+        if ((sprite = 2) & color) {
+            do Memory.poke(memAddress+0, 2032);
+            do Memory.poke(memAddress+32, 2056);
+            do Memory.poke(memAddress+64, 4100);
+            do Memory.poke(memAddress+96, 4116);
+            do Memory.poke(memAddress+128, 4116);
+            do Memory.poke(memAddress+160, 4100);
+            do Memory.poke(memAddress+192, 4100);
+            do Memory.poke(memAddress+224, 4100);
+            do Memory.poke(memAddress+256, 8188);
+            do Memory.poke(memAddress+288, 7100);
+            do Memory.poke(memAddress+320, 6156);
+            do Memory.poke(memAddress+352, 4088);
+            do Memory.poke(memAddress+384, 992);
+            do Memory.poke(memAddress+416, 992);
+            do Memory.poke(memAddress+448, 992);
+            do Memory.poke(memAddress+480, 448);
+        }
+        if ((sprite = 3) & color) {
+            do Memory.poke(memAddress+0, 0);
+            do Memory.poke(memAddress+32, 32766);
+            do Memory.poke(memAddress+64, 26598);
+            do Memory.poke(memAddress+96, 20490);
+            do Memory.poke(memAddress+128, 18834);
+            do Memory.poke(memAddress+160, 20082);
+            do Memory.poke(memAddress+192, 21066);
+            do Memory.poke(memAddress+224, 24966);
+            do Memory.poke(memAddress+256, 24966);
+            do Memory.poke(memAddress+288, 21066);
+            do Memory.poke(memAddress+320, 20082);
+            do Memory.poke(memAddress+352, 18834);
+            do Memory.poke(memAddress+384, 20490);
+            do Memory.poke(memAddress+416, 26598);
+            do Memory.poke(memAddress+448, 32766);
+            do Memory.poke(memAddress+480, 0);
+        }
+        return;
+    }
+    method void erase() {
+        do Screen.setColor(false);
+        do drawFood();
+        return;
+    }
+    method void erasePixel() {
+        do drawPixel(false);
+        return;
+    }
+}

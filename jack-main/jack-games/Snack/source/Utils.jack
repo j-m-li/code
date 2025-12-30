@@ -1,0 +1,37 @@
+class Utils {
+    function Array reverseArray(Array arr, int a_size) {
+        var int i, arrIndex;
+        var Array newArr;
+        let arrIndex = a_size;
+        let newArr = Array.new(a_size);
+        let i = 0;
+        while (i < a_size) {
+            let newArr[arrIndex-1] = arr[i];
+            let arrIndex = arrIndex - 1;
+            let i = i + 1;
+        }
+        do arr.dispose();
+        return newArr;
+    }
+    function Array increaseArray(Array arr, int a_size, int increaseSize) {
+        var int i;
+        var Array newArr;
+        let i = 0;
+        let newArr = Array.new(a_size+increaseSize);
+        while (i < a_size) {
+            let newArr[i] = arr[i];
+            let i = i + 1;
+        }
+        do arr.dispose();
+        return newArr;
+    }
+    function void printlines(int lines) {
+        var int i;
+        let i = 0;
+        while (i < lines) {
+            do Output.println();
+            let i = i + 1;
+        }
+        return;
+    }
+}

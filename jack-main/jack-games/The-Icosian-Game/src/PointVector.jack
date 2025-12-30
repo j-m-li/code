@@ -1,0 +1,95 @@
+/**
+* This class stores the data realted to the points.
+* Three types of data is stored, number of points, 
+* coordinates of the points, cordinates of character
+* name of the point and the 3 neibours of the points.
+*/
+class PointVector {
+    field Array linearVector; // Matrix stored as linear array.
+    field Array neighbours;   // 3 neighbours of each point
+    field Array charPos;      // position of label of each point
+    field int height;         // number of points
+
+    /**
+    * Creates a new PointVector class and initializes the 
+    * field variables.
+    * hgt - number od points.
+    */
+    constructor PointVector new(int hgt) {
+        var int i, elements;
+        let i = 0;
+        let height = hgt;
+        let elements = 2 * hgt;
+        let linearVector = Array.new(elements);
+        let charPos = Array.new(elements);
+        let elements = 3 * hgt;
+        let neighbours = Array.new(elements);
+        return this;
+    }
+
+    /**
+    * Initializes the object with data. Uses linear array to form matrix.
+    * point - serial number of point
+    * x,y - coordinates of the point
+    * n1,n2,n3 - 3 neighbours of a point
+    * c1,c2 - position of label in row and col
+    */
+    method void set(int point, int x, int y, int n1, int n2, int n3, int c1, int c2) {
+        let linearVector[point * 2] = x;
+        let linearVector[(point * 2) + 1] = y;
+        let charPos[point * 2] = c1;
+        let charPos[(point * 2) + 1] = c2;
+        let neighbours[point * 3] = n1;
+        let neighbours[(point * 3) + 1] = n2;
+        let neighbours[(point * 3) + 2] = n3;
+        return;
+    }
+
+    /**
+    * Returns the coordinates of the requested point.
+    * point - serial number of point
+    */ 
+    method Array getPoint(int point) {
+        var Array ret;
+        let ret = Array.new(2);
+        let ret[0] = linearVector[point * 2];
+        let ret[1] = linearVector[(point * 2) + 1];
+        return ret;
+    }
+
+    /**
+    * Returns the label position in rows and cols
+    * point - serial number of point
+    */
+    method Array getCharPos(int point) {
+        var Array ret;
+        let ret = Array.new(2);
+        let ret[0] = charPos[point * 2];
+        let ret[1] = charPos[(point * 2) + 1];
+        return ret;
+    }
+
+    /**
+    * Returns 3 nearest neighbour of a point.
+    * point - serial number of point
+    */
+    method Array getNeighbours(int point) {
+        var Array ret;
+        let ret = Array.new(3);
+        let ret[0] = neighbours[point * 3];
+        let ret[1] = neighbours[(point * 3) + 1];
+        let ret[2] = neighbours[(point * 3) + 2];
+        return ret;
+    }
+
+    /**
+    * Destructor of the class, frees memory.
+    */
+    method void dispose(){
+        do linearVector.dispose();
+        do neighbours.dispose();
+        do charPos.dispose();
+        do Memory.deAlloc(this);
+        return; 
+    }
+}

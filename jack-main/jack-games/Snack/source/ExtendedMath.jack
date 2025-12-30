@@ -1,0 +1,18 @@
+class ExtendedMath {
+    function int Mod(int a, int b) {
+		var int result;
+		if (a < 0) {
+			let a = a - 32767 - 1;
+		}			
+		if (a = b) {
+			return 0;
+		}
+		if (b = 0) { let b = b + 1; }
+		if (a > b) {
+			let result = (a - ((a / b) * b));
+			return result;
+		} else {
+			return a;
+		}
+    }
+}

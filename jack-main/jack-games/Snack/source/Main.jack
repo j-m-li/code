@@ -1,0 +1,17 @@
+class Main {
+    function void main() {
+        var Snake player;
+        var int kkey;
+        var Block b;
+        var Food f;
+        let kkey = 0;
+        do Interface.ShowStart();
+        while (kkey = 0) {
+            let kkey = Keyboard.keyPressed();
+        }
+        let player = Snake.new(1, 100, 85);
+        do Screen.clearScreen();
+        do Gameplay.Run(player, 120, kkey);
+        return;
+    }
+}

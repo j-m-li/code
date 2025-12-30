@@ -1,0 +1,24 @@
+
+
+/** Initializes a new Rodent game and starts running it. */
+class Main {
+	
+	function void main() {
+		var RodentGame game;
+		var boolean restart;
+		
+		do RodentGame.init();
+		do Block.init();
+		do Mouse.init();
+		do Cat.init();
+		
+		let restart = true;
+		while (restart) {
+			let game = RodentGame.new();
+			do game.run();
+			do game.dispose();
+			let restart = RodentGame.restart();
+		}
+		return;
+	}
+}

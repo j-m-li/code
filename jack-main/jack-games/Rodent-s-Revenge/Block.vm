@@ -1,0 +1,66 @@
+function Block.init 0
+push constant 16
+pop static 0
+push constant 16384
+pop static 1
+push constant 0
+return
+function Block.drawBlocks 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push constant 48
+push constant 48
+push constant 463
+push constant 207
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Block.draw 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push argument 0
+push argument 1
+push argument 0
+push static 0
+add
+push constant 1
+sub
+push argument 1
+push static 0
+add
+push constant 1
+sub
+call Screen.drawRectangle 4
+pop temp 0
+push constant 0
+return
+function Block.blockInLocation 1
+push static 1
+push constant 32
+push argument 1
+call Math.multiply 2
+add
+push argument 0
+push constant 16
+call Math.divide 2
+add
+pop local 0
+push local 0
+call Memory.peek 1
+push constant 1
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+return
+label IF_FALSE0
+push constant 0
+return

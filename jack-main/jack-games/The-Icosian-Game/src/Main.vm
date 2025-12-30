@@ -1,0 +1,54 @@
+function Main.main 3
+call SplashScreen.entryScreen 0
+pop temp 0
+label WHILE_EXP0
+push local 1
+push constant 0
+eq
+not
+if-goto WHILE_END0
+call Keyboard.keyPressed 0
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push local 1
+pop local 2
+call Screen.clearScreen 0
+pop temp 0
+push local 1
+push constant 14
+call Math.divide 2
+pop local 1
+push local 2
+push local 1
+push constant 14
+call Math.multiply 2
+sub
+pop local 1
+push constant 0
+pop local 2
+call SplashScreen.ruleScreen 0
+pop temp 0
+label WHILE_EXP1
+push local 2
+push constant 0
+eq
+not
+if-goto WHILE_END1
+call Keyboard.keyPressed 0
+pop local 2
+goto WHILE_EXP1
+label WHILE_END1
+call Screen.clearScreen 0
+pop temp 0
+push local 1
+call IcosianGame.new 1
+pop local 0
+push local 0
+call IcosianGame.run 1
+pop temp 0
+push local 0
+call IcosianGame.dispose 1
+pop temp 0
+push constant 0
+return

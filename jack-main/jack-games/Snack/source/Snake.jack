@@ -1,0 +1,134 @@
+class Snake {
+    field int side, speed, size, baseSpeed;
+    field Array snake;
+    constructor Snake new(int Asize, int x, int y) {
+        let size = Asize+2;
+        let side = 2;
+        let speed = 14;
+        let baseSpeed = 14;
+        let snake = Array.new(size);
+        let snake[0] = Block.new(x, y, side);
+        let snake[1] = Block.new(x-8, y, side);
+        let snake[2] = Block.new(x-16, y, side);
+        do start();
+        return this;
+    }
+    method Block getHead() {
+        return snake[0];
+    }
+    method int getSize() {
+        return size;
+    }
+    method void start() {
+        //do Screen.drawRectangle(X, Y, X+SIZE, Y+SIZE);
+        var Block block;
+        var int i;
+        let i = 0;
+        while (i < size) { // Draws the snake's full body at the start
+            let block = snake[i];
+            do block.draw(true);
+            let i = i + 1;
+        }
+        return;
+    }
+    method void increaseTail() {
+        var Block newBlock, oldBlock;
+        let oldBlock = snake[size-1];
+        let newBlock = Block.new(oldBlock.getX(), oldBlock.getY(), oldBlock.getHead());
+        let snake = Utils.increaseArray(snake, size, 1);
+        let size = size + 1;
+        let snake[size-1] = newBlock;
+        do newBlock.draw(true);
+        return;
+    }
+    method void drawPlayer(int side_) {
+        var Block child, parent;
+        var boolean updated;
+        var int newPixel, i;
+        var int parentX, parentY, tempX, tempY;
+        let parent = snake[0];
+        /*  Stores the X and Y values of the parent (otherwise the parent values will be 
+            updated by the keepDirection(...) method before they can be used to update the
+            child coordinates) 
+        */
+        let parentX = parent.getX(); 
+        let parentY = parent.getY();
+        /*  Update the snake's head position on the grid. Only the head needs to be manually updated,
+            the rest of the blocks will be updated based on its parent coordinates.
+        */
+        do keepDirection(parent, newPixel, side);
+        let i = 1;
+        while (i < size) { // Walk through the blocks that make the snake up to update their coordinates
+            let child = snake[i];
+            do child.draw(false);
+            let tempX = child.getX(); // Stores the X value of the child temporarily
+            let tempY = child.getY(); // Stores the Y value of the child temporarily
+            do child.setX(parentX); // Updates the child X coordinate with its parent's
+            do child.setY(parentY); // Updates the child Y coordinate with its parent's
+            do child.draw(true);
+            let parentX = tempX; // Set the child (i) as the new parent of its own child (i+1)
+            let parentY = tempY; // ...
+            let snake[i] = child;
+            let i = i + 1;
+        }
+        return;
+    }
+    method void keepDirection(Block block, int newPixel, int curSide) {
+        do block.draw(false);
+        if (curSide = 0) {
+            let newPixel = block.getX() - speed; // Subtracts one pixel per frame from the X axis to move the player to the left
+            do block.setX(newPixel);
+        }
+        if (curSide = 1) {
+            let newPixel = block.getY() - speed; // Subtracts one pixel per frame from the Y axis to move the player to the top
+            do block.setY(newPixel);
+        }
+        if (curSide = 2) {
+            let newPixel = block.getX() + speed; // Adds one pixel per frame to the X axis to move the player to the right
+            do block.setX(newPixel);
+        }
+        if (curSide = 3) {
+            //do Output.printInt(speed);
+            let newPixel = block.getY() + speed; // Adds one pixel per frame to the Y axis to move the player to the bottom
+            do block.setY(newPixel);
+        }
+        let speed = baseSpeed;
+        do block.draw(true);
+        let snake[0] = block;
+        return;
+    }
+    /** side = 0 (left), 1 (up), 2 (right), 3 (down); **/
+    method void move(int direction) {
+        var int pixel;
+        if (direction = 133) { // If down arrow is pressed
+            if (side = 1) {
+                let snake = Utils.reverseArray(snake, size);
+            }
+            let side = 3;
+        }
+        if (direction = 132) { // If right arrow is pressed
+            if (side = 0) {
+                let snake = Utils.reverseArray(snake, size);
+            }
+            let side = 2;
+        }
+        if (direction = 131) { // If up arrow is pressed
+            if (side = 3) {
+                let snake = Utils.reverseArray(snake, size);
+            }
+            let side = 1;
+        }
+        if (direction = 130) { // If left arrow is pressed
+            if (side = 2) {
+                let snake = Utils.reverseArray(snake, size);
+            }
+            let side = 0;
+        }
+        do drawPlayer(side);
+        return;
+    }
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

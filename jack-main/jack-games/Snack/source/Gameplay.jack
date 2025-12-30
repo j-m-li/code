@@ -1,0 +1,138 @@
+class Gameplay {
+    static int seedRoot;
+    static int points;
+    function void Run(Snake player, int timeSpeed, int kkey) {
+        var int direction;
+        var int curKey;
+        var Array pieces;
+        var Block head;
+        var int range;
+        var Food piece;
+        var boolean hasFood, foodBowl;
+        let points = 0;
+        do Gameplay.showPoints(points);
+        let kkey = 0;
+        let curKey = Keyboard.keyPressed();
+        do Random.setSeed(kkey); // Seeds the Random.jack generator with the default seed range
+        let range = Random.randRange(5);
+        if (range < 1) {
+            let range = 1;
+        }
+        do Map.DrawGrid();
+        //do Gameplay.showPoints(points);
+        let pieces = Gameplay.seedFood(range, player);
+        while(~(curKey = 135)) { // If ESC is pressed, the game is terminated
+            let curKey = Keyboard.keyPressed();
+            do Sys.wait(timeSpeed); // Defines the speed which the player will move
+            let direction = Keyboard.keyPressed(); // Gets the player input
+            do player.move(direction); // From the player input data, decides which direction will turn
+            let head = player.getHead();
+            let seedRoot = ExtendedMath.Mod(head.getX()+head.getY(), direction);
+            let hasFood = Gameplay.isFoodPlayerOverlapping(range, pieces, head, player); // Check at each frame if the player is overlapping (colliding) with a food piece
+            if (~hasFood) {
+                do pieces.dispose();
+                let range = Random.randRange(8);
+                do Output.printInt(range);
+                let pieces = Gameplay.seedFood(range, player);
+            }
+            if (head.getX() < 5) {
+                do player.dispose();
+                let curKey = 135;
+            }
+            if (head.getX() > 480) {
+                do player.dispose();
+                let curKey = 135;
+            }
+            if (head.getY() < 2) {
+                do player.dispose();
+                let curKey = 135;
+            }
+            if (head.getY() > 226) {
+                do player.dispose();
+                let curKey = 135;
+            }
+        }
+        do Interface.ShowGameOver(points);
+        while (kkey = 0) {
+            let kkey = Keyboard.keyPressed();
+        }
+        return;
+    }
+    
+    function boolean isFoodPlayerOverlapping(int range, Array pieces, Block player, Snake snake) {
+        var int i, hasFood;
+        var Food piece;
+        let i = 0;
+        while (i < range) {
+            let piece = pieces[i];
+            let hasFood = hasFood + piece;
+            if (~(piece = 0)) {
+               // Calculate the collision between the player and the food piece
+                if ((player.getX() < (piece.getX() + piece.getWidth())) & 
+                    ((player.getX() + player.getWidth()) > piece.getX()) &
+                    (player.getY() < (piece.getY() + piece.getHeight())) &
+                    ((player.getY() + player.getHeight()) > piece.getY())) {
+                        do piece.erasePixel(); // Erases the piece on the screen
+                        do piece.dispose(); // Dealloc the object from memory
+                        let pieces[i] = 0; // Switches the object for the value 0 to avoid accessing traces of the original object on next pass
+                        do snake.increaseTail();
+                        if (piece.getType() = 0) {
+                            let points = points + 3;
+                        }
+                        if (piece.getType() = 1) {
+                            let points = points + 6;
+                        }
+                        if (piece.getType() = 2) {
+                            let points = points + 9;
+                        }
+                        do Gameplay.showPoints(points);
+                }
+            }
+            let i = i + 1; // Advances the iterator by one
+            
+        }
+        let hasFood = Gameplay.isFoodPlenty(pieces, range);
+        return hasFood;
+    }
+
+    function boolean isFoodPlenty(Array pieces, int size) {
+        var int i;
+        var boolean isPlenty;
+        let i = 0;
+        let isPlenty = false;
+        while (i < size) {
+            if (~(pieces[i] = 0)) {
+                let isPlenty =  true;
+            }
+            let i = i + 1;
+        }
+        return isPlenty;
+    }
+
+    function Array seedFood(int range, Snake player) {
+        var int x, y;
+        var int i;
+        var Food piece;
+        var Array pieces;
+        let i = 0;
+        let pieces = Array.new(range); // Generate a new Array of Food objects with a random size
+        while (i < range) {
+            let x = Random.randRange(460);
+            let y = Random.randRange(200);
+            let piece = Food.new(x, y);
+            let pieces[i] = piece;
+            let i = i + 1;
+            do Random.setSeed((ExtendedMath.Mod(x, y)*ExtendedMath.Mod(x, y)+seedRoot));
+        }
+        return pieces;
+    }
+
+    function void showPoints(int points) {
+        do Output.moveCursor(22, 1);
+        do Output.printString(" Points: ");
+        do Output.printInt(points);
+        do Output.moveCursor(22, 45);
+        do Output.printString("@roxacarv");
+        return;
+    }
+}

@@ -1,0 +1,42 @@
+
+
+/** Implements the blocks of the Rodent's Revenge game. */
+class Block {
+
+	static int BLOCK_SIZE;				// size of a game block's edge, in pixels
+	static int SCREEN_BASE_ADDRESS;		// base address of the Hack-platform's screen
+
+
+	/** Initializes the static variables. */
+	function void init() {
+		let BLOCK_SIZE = 16;
+		let SCREEN_BASE_ADDRESS = 16384;
+		return; 
+	}
+
+	/** Draws the entire blocks of the game at their initial position. */
+	function void drawBlocks() {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(48, 48, 463, 207);
+		return;
+	}
+	
+	/** Draws a single block in the 16x16 bitmap whose top-left is (xCoord, yCoord) */
+	function void draw(int xCoord, int yCoord) {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(xCoord, yCoord, xCoord + BLOCK_SIZE - 1, yCoord + BLOCK_SIZE - 1);
+		return;
+	}
+	
+	/** Returns true if there is a block in the 16x16 bitmap whose top-left is (xCoord, yCoord).
+		Retruns false otherwise. */
+	function boolean blockInLocation(int xCoord, int yCoord) {
+		var int memAddress;
+		let memAddress = SCREEN_BASE_ADDRESS + (32 * yCoord) + Math.divide(xCoord, 16);
+		if (Memory.peek(memAddress) = -1) {
+			return true;
+		}
+		return false;
+	}
+	
+}

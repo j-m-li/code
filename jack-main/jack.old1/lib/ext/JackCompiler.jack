@@ -1,0 +1,161 @@
+
+class JackCompiler {
+	field File src;
+	field Xml x;
+	field JackTokenizer t;
+	field JackParser comp;
+
+	constructor JackCompiler new() {
+		let src = null;
+		let x = Xml.new();
+		let t = JackTokenizer.new(x);
+		let comp = JackParser.new(t);
+		return this;
+	}
+
+	method void dispose() {
+		do t.dispose();
+		do x.dispose();
+		if (comp) {
+			do comp.dispose();
+		}
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	method boolean compile(String src_) {
+		var File dst, a;
+		var JackAstToC c;
+		var String s;
+
+		let src = File.new(src_, false);
+		let dst = File.new("test.xml", true);
+		let s = src_.copy();
+		let s = s.appendStr(".h");
+		let a = File.new(s, true);
+		do s.dispose();
+		do x.clear();
+		do t.init(src, false);
+		do comp.init(src);
+		do comp.compileClass(t, dst);
+	
+		let c = JackAstToC.new(comp);
+		do c.compile(a);	
+		do c.dispose();
+
+		do x.dump(dst);
+
+		do a.dispose();
+		do dst.dispose();
+		do src.dispose();
+		let src = null;
+		//if (String2.compare("ctests/lib/ext/Gif.jack", src_)=0) {
+		//	do Sys.halt();
+		//}
+		return true;
+	}
+
+	method boolean link(String dir, Buffer files) {
+		var int i;
+		var String s;
+		var File dst;
+	//	let s = dir.copy();
+	//	let s = s.appendStr("main_jack.c");
+		let dst = File.new("main_jack.c", true);
+	//	do s.dispose();
+		let i = 0;
+		do dst.writeByte(10);		
+		while (i < files.getSize()) {
+			let s = files.getAt(i);
+			let s = s.copy();
+			let s = s.appendStr(".h");
+			do dst.writeString("#include ");
+			do dst.writeByte(34);		
+			do dst.writeString(s);
+			do dst.writeByte(34);		
+			do dst.writeByte(10);		
+			do s.dispose();
+			let i = i + 1;
+		}
+		do dst.writeString("#include <string.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <stdlib.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <stdio.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <sys/types.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <sys/stat.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#ifndef _WIN32");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <fcntl.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <unistd.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <dirent.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("struct stat File__status;");
+		do dst.writeByte(10);		
+		do dst.writeString("struct dirent *File__dp;");
+		do dst.writeByte(10);		
+		do dst.writeString("DIR *File__dir;");
+		do dst.writeByte(10);		
+		do dst.writeString("#else");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <windows.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <conio.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <io.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("#include <direct.h>");
+		do dst.writeByte(10);		
+		do dst.writeString("struct __stat64 File__status;");
+		do dst.writeByte(10);		
+		do dst.writeString("HANDLE File__hFind;");
+		do dst.writeByte(10);		
+		do dst.writeString("WIN32_FIND_DATAW File__FindFileData;");
+		do dst.writeByte(10);		
+		do dst.writeString("#endif");
+		do dst.writeByte(10);		
+		do dst.writeString("int Keyboard__flags;");
+		do dst.writeByte(10);		
+		do dst.writeString("int Sys__argc__;");
+		do dst.writeByte(10);		
+		do dst.writeString("char **Sys__argv__;");
+		do dst.writeByte(10);		
+		let i = 0;
+		do dst.writeString("#define JACK_IMPLEMENTATION");
+		do dst.writeByte(10);		
+		while (i < files.getSize()) {
+			let s = files.getAt(i);
+			let s = s.copy();
+			let s = s.appendStr(".h");
+			do dst.writeString("#include ");
+			do dst.writeByte(34);		
+			do dst.writeString(s);
+			do dst.writeByte(34);		
+			do dst.writeByte(10);		
+			do s.dispose();
+			let i = i + 1;
+		}
+	
+		do dst.writeString("int main(int argc, char *argv[]) {");
+		do dst.writeByte(10);		
+		do dst.writeString("	Sys__argc__ = argc;");
+		do dst.writeByte(10);		
+		do dst.writeString("	Sys__argv__ = argv;");
+		do dst.writeByte(10);		
+		do dst.writeString("	Sys__init();");
+		do dst.writeByte(10);		
+		do dst.writeString("	return 0;");
+		do dst.writeByte(10);		
+		do dst.writeString("}");
+		do dst.writeByte(10);		
+		do dst.dispose();
+	
+		return true;
+	}
+}
+

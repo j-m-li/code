@@ -1,0 +1,264 @@
+/**
+ * Implements the Rodent's Revenge game.
+ * Rodent's Revenge is a classic cat-and-mouse game with a twist:
+ * You are the mouse, and you are trying to outsmart the cats and
+ * trap them before they catch you.
+ * To succeed at Rodent's Revenge, you have to be fast and clever.
+ * The 4 arrow keys are used to move the mouse up, down, left, and right.
+ */
+
+class RodentGame {
+
+	static int  STANDING, SITTING, CHEESE,		// Cats' status(es)
+				UP, DOWN, LEFT, RIGHT,			// Mouse's directions
+				blockSize;						// size of a game block's edge, in pixels
+
+	static char Q, R, UP_ARROW, DOWN_ARROW,
+				LEFT_ARROW, RIGHT_ARROW;		// Keyboard constants in Jack
+
+
+	field Mouse mouse;							// the mouse of this game
+	field Cat cat0, cat1;						// the cats of this game
+	field boolean cat0WasEaten, cat1WasEaten;	// The player wins when both of them are true.
+	field int score;							// Increases when the mouse eats the cheese.
+	field int direction;						// the mouse's current direction: 
+												// 0=none, 1=up, 2=down, 3=left, 4=right
+
+	/** Initializes the static variables. */
+	function void init() {
+		let STANDING = 0;
+		let SITTING = 1;
+		let CHEESE = 2;
+
+		let UP = 1;
+		let DOWN = 2;
+		let LEFT = 3;
+		let RIGHT = 4;
+
+		let Q = 81;
+		let R = 82;
+		let UP_ARROW = 131;
+		let DOWN_ARROW = 133;
+		let LEFT_ARROW = 130;
+		let RIGHT_ARROW = 132;
+
+		return; 
+	}
+
+	/** Constructs a new Rodent Game. */
+	constructor RodentGame new() {
+		do Screen.clearScreen();
+		do Block.drawBlocks();
+		let mouse = Mouse.new();
+		let cat0 = Cat.new(0);
+		let cat1 = Cat.new(1);
+		let cat0WasEaten = false;
+		let cat1WasEaten = false;
+		let score = 0;
+		return this;
+	}
+
+	/** Disposes this game. */
+	method void dispose() {
+		do mouse.dispose();
+		do cat0.dispose();
+		do cat1.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** If the player won (i.e. all cats were eaten by the mouse), the game is ended.
+		Prints an informative message, disposes the game's objects, and disposes the game. */
+	method void win() {
+		var String message;
+		do Screen.clearScreen();
+		let message = String.new(45);
+		do Output.moveCursor(5, 12);
+		let message = "Congratulations! You have won the game.";
+		do Output.printString(message);
+		do Output.moveCursor(7, 18);
+		let message = "Your final score is:  ";
+		do Output.printString(message);
+		do Output.printInt(score);
+		do Output.moveCursor(9, 13);
+		let message = "This game is a real fun, isn't  it?!";
+		do Output.printString(message);
+		do Output.moveCursor(11, 21);
+		let message = "Come back soon!  : )";
+		do Output.printString(message);
+		do Output.moveCursor(15, 17);
+		let message = "Press R to start a new game.";
+		do Output.printString(message);
+		do Output.moveCursor(17, 23);
+		let message = "Press Q to quit.";
+		do Output.printString(message);
+		do message.dispose();
+		return;
+	}
+
+	/** If the player lost (i.e. the mouse was eaten by a cat), the game is over.
+		Prints an informative message, disposes the game's objects, and disposes the game. */
+	method void gameOver() {
+		var String message;
+		do Screen.clearScreen();
+		let message = String.new(40);
+		do Output.moveCursor(5, 26);
+		let message = "Game Over!";
+		do Output.printString(message);
+		do Output.moveCursor(7, 21);
+		let message = "You were pretty good.";
+		do Output.printString(message);
+		do Output.moveCursor(9, 14);
+		let message = "Next time you will do even better.";
+		do Output.printString(message);
+		do Output.moveCursor(11, 21);
+		let message = "Come back soon!  : )";
+		do Output.printString(message);
+		do Output.moveCursor(15, 17);
+		let message = "Press R to start a new game.";
+		do Output.printString(message);
+		do Output.moveCursor(17, 23);
+		let message = "Press Q to quit.";
+		do Output.printString(message);
+		do message.dispose();
+		return;
+	}
+
+	/** Updates the status (standing/sitting/cheese) of the cat. */
+	method void updateCatStatus() {
+		if (~(cat0.getStatus() = CHEESE)) {	/** Once the cats have turned into cheese,
+												there is no turning back.		*/
+			if (cat0.canMove()) {
+				do cat0.setStatus(STANDING);
+			}
+			else {
+				do cat0.setStatus(SITTING);
+			}
+
+			if (cat1.canMove()) {
+				do cat1.setStatus(STANDING);
+			}
+			else {
+				if (cat0.canMove()) {
+					do cat1.setStatus(SITTING);
+				}
+				else {							// i.e. if both cats can't move.
+					do cat0.setStatus(CHEESE);
+					do cat1.setStatus(CHEESE);
+				}
+			}
+			do cat0.draw();
+			do cat1.draw();
+		}
+		return;
+	}
+
+	/** Checks if the mouse has collided one of the cats. */
+	method boolean mouseAndCatCollided() {
+		var boolean endGame;
+		let endGame = false;
+		if (cat0.inLocation(mouse.getX(), mouse.getY())) {
+			if (cat0.getStatus() = CHEESE) {
+				let cat0WasEaten = true;
+				let score = score + 100;
+				do cat0.dispose();
+			}
+			else {
+				let endGame = true;
+				do Sys.wait(1000);
+				do gameOver();
+			}
+		}
+		if (cat1.inLocation(mouse.getX(), mouse.getY())) {
+			if (cat1.getStatus() = CHEESE) {
+				let cat1WasEaten = true;
+				let score = score + 100;
+				do cat1.dispose();
+			}
+			else {
+				let endGame = true;
+				do Sys.wait(1000);
+				do gameOver();
+			}
+		}
+		if ((cat0WasEaten) & (cat1WasEaten)) {
+			let endGame = true;
+			do Sys.wait(100);
+			do win();
+		}
+		return endGame;
+	}
+
+	/** Runs the game: Moves the cats. Moves the mouse according to the user's input. */
+	method void run() {
+		var char key;		// the key currently pressed by the user
+
+		while (true) {
+			let direction = 0;					// Resets state of the previous iteration.
+			do cat0.setPushedByMouse(false);
+			do cat1.setPushedByMouse(false);
+			
+			let key = Keyboard.keyPressed();
+
+			if (key = Q)			{ return;					}	// Ends the game.
+			if (key = UP_ARROW)		{ let direction = UP;		}
+			if (key = DOWN_ARROW)	{ let direction = DOWN;		}
+			if (key = LEFT_ARROW)	{ let direction = LEFT;		}
+			if (key = RIGHT_ARROW)	{ let direction = RIGHT;	}
+
+			do mouse.move(direction, cat0, cat1);
+			if (mouse.pushedBlock()) {
+				
+				if (cat0.getSquashed()) {
+					let cat0WasEaten = true;
+					do cat0.dispose();
+				}
+				if (cat0.getPushedByMouse()) {
+					do cat0.move(mouse.getX(), mouse.getY());
+				}
+				
+				if (cat1.getSquashed()) {
+					let cat1WasEaten = true;
+					do cat1.dispose();
+				}
+				if (cat1.getPushedByMouse()) {
+					do cat1.move(mouse.getX(), mouse.getY());
+				}
+				
+				do mouse.drawPushedBlock();
+				do mouse.draw();
+				do updateCatStatus();
+				if (mouseAndCatCollided()) {
+					return;
+				}
+			}
+			else {
+				do mouse.draw();
+			}
+			do cat0.move(mouse.getX(), mouse.getY());
+			do cat1.move(mouse.getX(), mouse.getY());
+			do updateCatStatus();
+			if (mouseAndCatCollided()) {
+				return;
+			}
+			
+			let key = 0;
+			do Sys.wait(100);		// delays the next movement
+		} // while
+		return;
+	}
+	
+	function boolean restart() {
+		var char key;
+		while (true) {
+			let key = Keyboard.keyPressed();
+			if (key = R) {
+				return true;
+			}
+			if (key = Q) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
