@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+typedef enum { NUMBER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, END } TokenType;
+
+typedef struct {
+    TokenType type;
+    int value;
+} Token;
+
+Token get_next_token(const char **input) {
+    while (isspace(**input)) (*input)++;
+    if (**input == '\0') return (Token){ END, 0 };
+    if (**input == '+') return (Token){ PLUS, (*input)++, 0 };
+    if (**input == '-') return (Token){ MINUS, (*input)++, 0 };
+    if (**input == '*') return (Token){ MUL, (*input)++, 0 };
+    if (**input == '/') return (Token){ DIV, (*input)++, 0 };
+    if (**input == '(') return (Token){ LPAREN, (*input)++, 0 };
+    if (**input == ')') return (Token){ RPAREN, (*input)++, 0 };
+    if (isdigit(**input)) {
+        int value = 0;
+        while (isdigit(**input)) value = value * 10 + (*(*input)++ - '0');
+        return (Token){ NUMBER, value };
+    }
+    fprintf(stderr, "Unexpected character: %c\n", **input);
+    exit(EXIT_FAILURE);
+}
+
+typedef struct {
+    Token current_token;
+    const char *input;
+} Parser;
+
+void eat(Parser *parser, TokenType type) {
+    if (parser->current_token.type == type)
+        parser->current_token = get_next_token(&parser->input);
+    else {
+        fprintf(stderr, "Unexpected token\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int factor(Parser *parser);
+int term(Parser *parser);
+int expr(Parser *parser);
+
+int factor(Parser *parser) {
+    Token token = parser->current_token;
+    if (token.type == NUMBER) {
+        eat(parser, NUMBER);
+        return token.value;
+    } else if (token.type == LPAREN) {
+        eat(parser, LPAREN);
+        {
+            int result = expr(parser);
+            eat(parser, RPAREN);
+            return result;
+        }
+    } else {
+        fprintf(stderr, "Unexpected token in factor\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+int term(Parser *parser) {
+    int result = factor(parser);
+    while (parser->current_token.type == MUL || parser->current_token.type == DIV) {
+        Token token = parser->current_token;
+        if (token.type == MUL) {
+            eat(parser, MUL);
+            result *= factor(parser);
+        } else if (token.type == DIV) {
+            eat(parser, DIV);
+            result /= factor(parser);
+        }
+    }
+    return result;
+}
+
+int expr(Parser *parser) {
+    int result = term(parser);
+    while (parser->current_token.type == PLUS || parser->current_token.type == MINUS) {
+        Token token = parser->current_token;
+        if (token.type == PLUS) {
+            eat(parser, PLUS);
+            result += term(parser);
+        } else if (token.type == MINUS) {
+            eat(parser, MINUS);
+            result -= term(parser);
+        }
+    }
+    return result;
+}
+
+int parse(const char *input) {
+    Parser parser = { get_next_token(&input), input };
+    return expr(&parser);
+}
+
+int main() {
+    const char *expression = "3 + 5 * (10 - 4)";
+    int result = parse(expression);
+    printf("Result: %d\n", result);
+    return 0;
+}
+

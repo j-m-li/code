@@ -1,0 +1,353 @@
+/*
+ *          MMXXIII December 11 PUBLIC DOMAIN by O'ksi'D
+ *
+ *        The authors disclaim copyright to this software.
+ *
+ * Anyone is free to copy, merge, modify, publish, use, compile, sell,
+ * or distribute this software, either in source code form or as a
+ * compiled binary, for any purpose, commercial or non-commercial, and
+ * by any means.
+ *
+ * Anyone is free to create, communicate to the public, use, sell,
+ * repair, modify, test, distribute or configure hardware in finished
+ * or intermediate form, whether by manufacture, assembly, compiling,
+ * processing, loading or applying this software or another hardware or
+ * otherwise.
+ *
+ * THE SOFTWARE AND/OR HARDWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
+ * OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT OF ANY PATENT, COPYRIGHT, TRADE SECRET OR OTHER
+ * PROPRIETARY RIGHT.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE AND/OR HARDWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+ * AND/OR HARDWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ */
+
+class Aemmiter
+{
+field Aemmiter side;
+field Aclass clas;
+field Amember cur_memb;
+
+constructor Aemmiter new(in Aemmiter side1)
+{
+	side := side1;
+	clas := null;
+	cur_memb := null;
+	return this;
+}
+
+virtual void dispose()
+{
+	std.free(this);
+	return;
+}
+
+method void set_class(in Aclass class1)
+{
+	clas := class1;
+	return;
+}
+
+method void set_member(in Amember mb)
+{
+	cur_memb := mb;
+	return;
+}
+
+virtual int emmit(in Aparser par)
+{
+	return side.emmit(par);
+}
+
+virtual string get_head()
+{
+	return side.get_head();
+}
+
+virtual string get_data()
+{
+	return side.get_data();
+}
+
+virtual string get_mid()
+{
+	return side.get_mid();
+}
+
+method Amember find_param(in string stri)
+{
+	var Amember v;
+	var int i;
+	var buffer vars;
+	var Atoken tok;
+	var string s;
+
+	vars := cur_memb.get_params();
+	i := 0;
+	if (vars != null) {
+		i := vars.length();
+	}
+	while (i > 0) {
+		i := i - 1;
+		v := vars.get_at(i);
+		if (v != null) {
+			tok := v.get_name();
+			s := tok.get_data();
+			if (s != null) {
+				if (stri.compare(s) == 0) {
+					return v;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+method Amember find_field(in string stri)
+{
+	var Amember v;
+	var int i;
+	var buffer vars;
+	var Atoken tok;
+	var string s;
+
+	i := 0;
+	vars := clas.get_members();
+	if (vars != null) {
+		i := vars.length();
+	}
+	while (i > 0) {
+		i := i - 1;
+		v := vars.get_at(i);
+		if (v != null) {
+			tok := v.get_name();
+			s := tok.get_data();
+			if ((s != null) && (v.get_kind() == Aclass.$Cfield)) {
+				if (stri.compare(s) == 0) {
+					return v;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+method Amember find_method(in string stri)
+{
+	var Amember v;
+	var int i;
+	var buffer vars;
+	var Atoken tok;
+	var string s;
+	var int k;
+
+	i := 0;
+	vars := clas.get_members();
+	if (vars != null) {
+		i := vars.length();
+	}
+	while (i > 0) {
+		i := i - 1;
+		v := vars.get_at(i);
+		if (v != null) {
+			tok := v.get_name();
+			k := v.get_kind();
+			s := tok.get_data();
+			if ((s != null) && (k == Aclass.$Cmethod ||
+					    k == Aclass.$Cvirtual ||
+					    k == Aclass.$Casync)
+			   ) {
+				if (stri.compare(s) == 0) {
+					return v;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+method Amember find_static(in string stri)
+{
+	var Amember v;
+	var int i;
+	var buffer vars;
+	var Atoken tok;
+	var string s;
+	var int k;
+
+	i := 0;
+	vars := clas.get_members();
+	if (vars != null) {
+		i := vars.length();
+	}
+	while (i > 0) {
+		i := i - 1;
+		v := vars.get_at(i);
+		if (v != null) {
+			tok := v.get_name();
+			k := v.get_kind();
+			s := tok.get_data();
+			if ((s != null) && (k == Aclass.$Cstatic)) {
+				if (stri.compare(s) == 0) {
+					return v;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+method Amember find_local(in string stri)
+{
+	var Amember v;
+	var int i;
+	var buffer vars;
+	var Atoken tok;
+	var string s;
+
+	vars := cur_memb.get_vars();
+	i := 0;
+	if (vars != null) {
+		i := vars.length();
+	}
+	while (i > 0) {
+		i := i - 1;
+		v := vars.get_at(i);
+		if (v != null) {
+			tok := v.get_name();
+			s := tok.get_data();
+			if ((s != null)) {
+				if (stri.compare(s) == 0) {
+					return v;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+method Amember find_variable(in string stri)
+{
+	var Amember v;
+
+	v := find_local(stri);
+	if (v == null) {
+		v := find_param(stri);
+	}
+	if (v == null) {
+		v := find_field(stri);
+	}
+	if (v == null) {
+		v := find_static(stri);
+	}
+	return v;
+}
+
+method string is_switch(in Astatement st, in string vari)
+{
+	var Aexpr ex;
+	var string sv;
+
+	ex := st.get_expression();
+	if (ex == null) {
+		return null;
+	}
+	sv := ex.is_equal_comp(vari);
+	return sv;
+}
+
+method Aexpr get_switch_expr(in Astatement st)
+{
+	var Aexpr ex;
+	ex := st.get_expression();
+	ex := ex.get_switch_expr();
+	return ex;
+}
+
+virtual void gen_virtuals()
+{
+	return;
+}
+
+virtual void expr_process(in Aexpr expr)
+{
+	return;
+}
+
+method void expr_gen(in Aexpr expr)
+{
+	var Aexpr ex;
+	var Aexpr ex1;
+	var buffer stack;
+	stack := buffer.new(4, 0);
+	ex := expr.get_right();
+	ex := expr;
+	ex.set_flags(0);
+	stack.push(ex);
+	while (stack.length() > 0) {
+		ex := stack.get_last();
+		if (ex.get_flags() != 0) {
+			ex := stack.pop();
+			side.expr_process(ex);
+		} else {
+			ex1 := ex;
+			ex.set_flags(1);
+			ex := ex.get_right();
+			if (ex != null) {
+				ex.set_flags(0);
+				stack.push(ex);
+			}
+			ex := ex1.get_left();
+			if  (ex != null) {
+				ex.set_flags(0);
+				stack.push(ex);
+			}
+		}
+	}
+	std.delete(stack);
+	return;
+}
+
+method void error(in Atoken t, in string e)
+{
+	if (t != null) {
+		console.log_str(t.get_file());
+		console.log_str(": at line (");
+		console.log_int(t.get_line());
+		console.log_str(") '");
+		console.log_str(t.get_data());
+		console.log_str("' ");
+	}
+	console.log(e);
+	dump();
+	std.exit(-1);
+	return;
+}
+
+method void dump()
+{
+	/*
+		var linked c;
+		var Atoken to;
+		var string s;
+		var int l;
+		l := _proc.length();
+
+		while (l > 0) {
+			l := l - 1;
+			c := _proc.get_at(l);
+			to := c.get_data1();
+			s := to.get_data();
+			if (s != null) {
+				console.log_int(c.get_flags());
+				console.log(s);
+			}
+		}
+	*/
+	return;
+}
+
+} // class

@@ -1,0 +1,25 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW2AR-18C" pn="GW2AR-LV18QN88C8/I7">gw2ar18c-000</Device>
+    <FileList>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/async_fifo.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/cod5_cpu.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/cod5_prog_cnt.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/display.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/sdcard.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/soc.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/spi_master.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/tmds_encoder.v" type="file.verilog" enable="1"/>
+        <File path="C:/Users/jml/source/repos/cod5-soc/common/src/uart.v" type="file.verilog" enable="1"/>
+        <File path="src/cod5_top.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll/TMDS_rPLL.v" type="file.verilog" enable="1"/>
+        <File path="src/gowin_rpll/gowin_rpll.v" type="file.verilog" enable="1"/>
+        <File path="src/gpdi.v" type="file.verilog" enable="1"/>
+        <File path="src/sdram.v" type="file.verilog" enable="1"/>
+        <File path="src/physical_constraint.cst" type="file.cst" enable="1"/>
+        <File path="src/timing_constraint.sdc" type="file.sdc" enable="1"/>
+    </FileList>
+</Project>

@@ -1,0 +1,57 @@
+/*
+ *                     jack public domain compiler
+ *
+ *                      15 may MMXXI PUBLIC DOMAIN
+ *           The author disclaims copyright to this source code.
+ *
+ *
+ */
+
+
+class UnitMath {
+	const String CONSTA := "A Math.sqrt...";
+	const int CONST25 := 25;
+	function boolean isOk(int l) {
+		var int i;
+		var boolean ok;
+		let ok := false;
+		let i := Math.sqrt(25);
+		if (i == 5) {
+			let ok := true;
+		}
+		//do Output.printInt(i);
+		do Unit.log(l + 1, UnitMath.$CONSTA, ok);
+		let ok := false;
+		let i := Math.divide(UnitMath.$CONST25, 2);
+		if (i == 12) {
+			let ok := true;
+		}
+		do Unit.log(l + 1, "Math.divide...", ok);
+
+		let ok := false;
+		let i := Math.multiply(5, 5);
+		if (i == 25) {
+			let ok := true;
+		}
+		do Unit.log(l + 1, "Math.multiply...", ok);
+	
+		ok := false;
+		i := 2 + 3 * 5;
+		if (i == '\30') {
+			let ok := true;
+		}
+		do Unit.log(l + 1, "2 + 3 * 5...", ok);
+
+		ok := false;
+		i := 2 * 3 + 5;
+		if (i == '\11') {
+			ok := true;
+		}
+		Unit.log(l + 1, "2 * 3 + 5...", ok);
+
+
+		return Memory.checkEmpty();
+	}
+	
+}
+

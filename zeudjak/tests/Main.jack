@@ -1,0 +1,33 @@
+/*
+ *                     jack public domain compiler
+ *
+ *                      15 may MMXXI PUBLIC DOMAIN
+ *           The author disclaims copyright to this source code.
+ *
+ *
+ */
+
+
+class Main {
+
+	function void main() {
+		do Output.printString("Start.");
+		do Output.println();
+		do Sys.args();
+		do Sys.wait(10);
+		do Sys.deInit();
+		do Unit.setLevel(2);
+		do Unit.clear(2);
+		do Unit.run(0, "Sys", Memory.checkEmpty());	
+		do Unit.run(0, "String", UnitString.isOk(0));	
+		do Unit.run(0, "File", UnitFile.isOk(0));	
+		//do Unit.run(0, "Xml", UnitXml.isOk(0));	
+		do Unit.run(0, "Math", UnitMath.isOk(0));	
+		do Unit.run(0, "Bytes", UnitBytes.isOk(0));	
+		//do Unit.run(0, "Screen", UnitScreen.isOk(0));	
+		//do Unit.run(0, "JackCompiler", UnitJackCompiler.isOk(0));
+		Unit.isOk();
+		do Output.println();
+
+	}
+}

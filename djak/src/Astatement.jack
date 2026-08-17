@@ -1,0 +1,146 @@
+/*
+ *          MMXXIII December 11 PUBLIC DOMAIN by O'ksi'D
+ *
+ *        The authors disclaim copyright to this software.
+ *
+ * Anyone is free to copy, merge, modify, publish, use, compile, sell,
+ * or distribute this software, either in source code form or as a
+ * compiled binary, for any purpose, commercial or non-commercial, and
+ * by any means.
+ *
+ * Anyone is free to create, communicate to the public, use, sell,
+ * repair, modify, test, distribute or configure hardware in finished
+ * or intermediate form, whether by manufacture, assembly, compiling,
+ * processing, loading or applying this software or another hardware or
+ * otherwise.
+ *
+ * THE SOFTWARE AND/OR HARDWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY
+ * OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT OF ANY PATENT, COPYRIGHT, TRADE SECRET OR OTHER
+ * PROPRIETARY RIGHT.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE AND/OR HARDWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+ * AND/OR HARDWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ */
+
+class Astatement
+{
+field int type;
+field Aexpr expr;
+field buffer statements;
+field buffer else_stms;
+field Astatement parent;
+field int depth;
+
+constructor Astatement new(in int type1, in statement parent1, in int depth1)
+{
+	type := type1;
+	parent := parent1;
+	depth := depth1;
+	expr := null;
+	statements := null;
+	else_stms := null;
+	return this;
+}
+
+virtual void dispose()
+{
+	std.delete(expr);
+	std.delete(statements);
+	std.delete(else_stms);
+	std.free(this);
+	return;
+}
+
+method int get_type()
+{
+	return type;
+}
+
+method void set_type(in int type1)
+{
+	type := type1;
+	return;
+}
+
+method int get_depth()
+{
+	return depth;
+}
+
+method Astatement get_parent()
+{
+	return parent;
+}
+
+method buffer get_statements()
+{
+	return statements;
+}
+
+method buffer get_else()
+{
+	return else_stms;
+}
+
+method Aexpr get_expression()
+{
+	return expr;
+}
+
+method void add_else(in int type1)
+{
+	var Astatement st;
+	if (else_stms != null) {
+		console.log("Double else..");
+		std.exit(-1);
+	}
+	else_stms := buffer.new(2, 1);
+	st := Astatement.new(type1, parent, depth);
+	add_statement(st);
+	return;
+}
+
+method void add_statement(in Astatement statement1)
+{
+	if (statements == null) {
+		statements := buffer.new(2, 1);
+	}
+	if (else_stms != null) {
+		else_stms.push(statement1);
+	} else {
+		statements.push(statement1);
+	}
+	return;
+}
+
+method void set_expression(in Aexpr expr1)
+{
+	var Aexpr ex1;
+
+	std.delete(expr);
+	expr := null;
+	ex1 := std.move(expr1);
+	if (type == Aclass.$Cif) {
+		expr := ex1;
+	} else if (type == Aclass.$Celseif) {
+		expr := ex1;
+	} else if (type == Aclass.$Clet) {
+		expr := ex1;
+	} else if (type == Aclass.$Cdo) {
+		expr := ex1;
+	} else if (type == Aclass.$Cwhile) {
+		expr := ex1;
+	} else if (type == Aclass.$Creturn) {
+		expr := ex1;
+	} else {
+		console.log("DONT KNOW WHAT");
+		std.exit(-1);
+	}
+	return;
+}
+
+} // class
+

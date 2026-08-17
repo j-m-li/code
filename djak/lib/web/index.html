@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- The authors disclam copyright to this source code -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="keywords" content="terminal, ANSI">
+<meta name="description" content="ANSI terminal emulator">
+<link rel="icon" href="https://cod5.com/favicon.ico">
+<script id="scripts" 
+	src="include.js" 
+	onload="include(window, 'theApp', './main.js');">
+</script>
+<link href="style.css" rel="stylesheet">
+<body>
+<div class="full" id="full_div">
+<textarea id="kbd_input"
+	  autofocus="true"
+	  spellcheck="false"
+	  autocorrect="off"
+	  autocapitalize="off"
+	  autocomplete="off"
+	>_</textarea>
+<div id="mouse_input" 
+	title="" 
+	href="c:"
+><!--<canvas id="screen" 
+		width="640" 
+		height="480">
+	Unsupported web browser...
+</canvas>
+--><div id="screen"></div></div>
+</div>
+<script>
+function kbd_keydown(ev)
+{
+	if (ev.isComposing || ev.keyCode === 229) {
+		return false;
+	}
+	var r = theApp.term.get().keydown(ev.code, 
+		ev.shiftKey,
+		ev.ctrlKey,
+		ev.altKey, 
+		ev.metaKey);
+	if (r.length > 0) {
+		ev.preventDefault();
+		ev.stopPropagation();
+		theApp.out.get().send(r);
+		return true
+	}
+	return false;
+}
+
+var kbd_index = 1;
+function kbd_init()
+{
+	var k = document.getElementById('kbd_input');
+	k.value = "_";
+	kbd_index = 1;
+	k.setSelectionRange(1,1);
+	k.focus();
+}
+function kbd_change(ev)
+{
+	var k = document.getElementById('kbd_input');
+	if (k.selectionStart < 1) {
+		k.setSelectionRange(1,1);
+		k.value = "_";
+		kbd_index = 1;
+		k.focus();
+	}
+}
+
+
+function kbd_start(ev)
+{
+}
+
+function kbd_input(ev)
+{
+	var k = ev.target;
+	var v = k.value;
+	var o = v;
+	if (v.length < kbd_index || v.length == 0) {
+		var i = kbd_index - v.length -1;
+		o = "\b";
+		while (i > 0) {
+			o = o + "\b";
+			i--;
+		}
+		kbd_init();
+	} else if (v.length == kbd_index && kbd_index > 1) {
+		o = "\b"  + v.substr(kbd_index - 1);
+		kbd_init();
+	} else {
+		o = v.substr(kbd_index);
+		kbd_index = v.length;
+	}
+	theApp.out.get().send(o);
+	if (o.trim() === '') {
+		kbd_init();
+	}
+	return true;
+}	
+
+function full_focus(ev)
+{
+	kbd_init();
+	ev.preventDefault();
+	ev.stopPropagation();
+	return true;
+}
+
+function mouse_click(ev)
+{
+	var s = window.getSelection();
+	return full_focus(ev); 
+}
+
+
+function mouse_move(ev)
+{
+	ev.preventDefault();
+	ev.stopPropagation();
+	return false;
+}
+
+function resize()
+{
+	theApp.term.get().resize(window.innerWidth, window.innerHeight);;
+}
+
+kbd_init();
+
+document.getElementById('full_div').addEventListener(
+	'click', full_focus, false);
+document.getElementById('mouse_input').addEventListener(
+	'mouseup', mouse_click, false);
+document.getElementById('mouse_input').addEventListener(
+	'mouseenter', mouse_move, false);
+document.getElementById('mouse_input').addEventListener(
+	'mousemove', mouse_move, false);
+
+document.getElementById('kbd_input').addEventListener(
+	'input', kbd_input, false);
+document.getElementById('kbd_input').addEventListener(
+	'keydown', kbd_keydown, false);
+document.getElementById('kbd_input').addEventListener(
+	'compositionstart', kbd_start, false);
+document.addEventListener(
+	'selectionchange', kbd_change, false);
+window.addEventListener('resize', resize);
+
+</script>
+</body>
+</html>
+

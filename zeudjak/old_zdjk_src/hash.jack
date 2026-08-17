@@ -1,0 +1,20 @@
+
+class hash {
+field array _arr;
+field int size;
+
+constructor hash new(in int size_)
+{
+	size := size_;
+	_arr := array.new(size);
+	return this;
+}
+
+method void dispose()
+{
+	_arr.dispose();
+	std.free(this);
+	return;
+}
+
+} // class

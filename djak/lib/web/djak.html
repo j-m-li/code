@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<title>djak 3.0.3</title>
+<meta name="keywords" content="djak, jack">
+<meta name="description" content="She's got The Jack.">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head><body style="background-color:#001800;height:99.99vh;border:0px;margin:0px;padding:0px;">
+<div style="width:100%;height:100%;" onclick="document.getElementById('output').focus();">
+<textarea autofocus style="display:block;opacity:0;height:20px;width:90%;" id="output" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off">_</textarea>
+<a title="" href="javascript:document.getElementById('output').focus();" ><canvas id="canvas" width="640" height="480" style="border:0px;position:absolute;top:0;bottom:0;left:0;right:0;display:block;margin:auto;margin-top:0px;max-width:100%;max-height:100%;">
+
+<h1>djak</h1>
+</canvas></a>
+</div>
+<script src="dj303.js"></script>
+<script>
+
+
+console.log_str = function (s) {
+	console.log(s);
+}
+
+console.log_int = function (i) {
+	console.log(i);
+}
+
+function array(size) {
+	return new Array(size);
+}
+
+function std()
+{
+	return this;
+}
+
+std.get_args = function()
+{
+	return std.args;
+}
+
+std.get_argc = function()
+{
+	return std.argc;
+}
+
+std.exit = function()
+{
+	return 0;
+}
+
+std.stralloc = function(obj, len)
+{
+	obj._str = new String(len);
+	return obj._str;
+}
+
+std.strrelease = function(obj)
+{
+	obj._str = undefined;
+	return 0;
+}
+
+std.strlen = function(str)
+{
+	if (str === undefined) {
+		return 0;
+	}
+	return str.length;
+}
+
+std.strindex = function(hayst, offset, needle)
+{
+	return hayst._str.indexOf(needle._str, offset);
+}
+
+std.strappend = function(dest, dpos, src, start, maxlen)
+{
+	if (src == undefined || src._str === undefined) {
+		return dest;
+	}
+	dest._str = dest._str.substr(dpos) + src._str.substr(start);
+	return dest;
+}
+
+std.str_set_at = function(dest, pos, va)
+{
+	dest._str = dest._str.substr(pos) + String.fromCodePoint(va) 
+		+ dest._str.substr(pos+1);
+	return dest;
+}
+
+std.native2string = function (buf) {
+	var data;
+	data = new string(1);
+	data._str = buf;
+	return data;
+
+}
+
+std.hex_val = function(c)
+{
+	if (c >= 48 && c <= 57) {
+		return c - '0';
+	} else  if (c >= 97 && c <= 102) {
+		return c - 97 + 10;
+	} else  if (c >= 65 && c <= 70) {
+		return c - 65 + 10;
+	}
+	return 0;
+}
+
+std.is_octal = function(c)
+{
+	if (c >= 48 && c <= 55) {
+		return 1;
+	}
+	return 0;
+}
+
+std.cp = function(b, i, o) {
+	return b.codePointAt(i+o);
+}
+
+std.unescape_to_int = function(src)
+{
+	var b;
+	var n = 0;
+	var v;
+	var l;
+	var i;
+	b = src._str;
+	l = b.length;
+	i = 0;
+	while (i < l) {
+		n = n * 255;
+		if (std.cp(b,i,0) == 92) {
+			i++;	
+			switch (std.cp(b,i,0)) {
+			case 97: n += 7; break;
+			case 98: n += 8; break;
+			case 102: n += 12; break;
+			case 110: n += 10; break;
+			case 114: n += 13; break;
+			case 116: n += 9; break;
+			case 118: n += 11; break;
+			case 78:
+				if (!is_hex(std.cp(b,i, 1))) {
+					n += std.cp(b,i, 0);
+				} else {
+					v = 0;
+					while (is_hex(std.cp(b,i,1))) {
+						v *= 16;
+						i++;
+						v += hex_val(std.cp(b,i,0));
+					}
+					n += v;
+				}
+				break;
+			case 48:
+				if (!is_octal(std.cp(b,i,1))) {
+					n += 0;
+				} else {
+					v = 0;
+					while (is_octal(std.cp(b,i,1))) {
+						v *= 8;
+						i++;
+						v += hex_val(std.cp(b,i,0));
+					}
+					n += v;
+				}
+				break;
+			default:
+				n += 92;
+				n = n * 255;
+				n += std.cp(b,i,0);
+			}
+		} else {
+			n += std.cp(b,i,0);
+		}
+		i++;
+        }
+	return n;
+}
+
+std.move = function (obj, parent) 
+{
+	return obj;
+}
+std.panic = function ()
+{
+	alert("PANIC");
+}
+
+std.char_to_int = function(v) 
+{
+	return v.codePointAt(0);
+}
+
+std.loop = function()
+{
+	return 0;
+}
+
+std.delete = function(obj)
+{
+	return 0;
+}
+
+String.prototype.to_string = function()
+{
+	return std.native2string(this);	
+}
+
+std.unlink = function(folder, name, cb, this_cb)
+{
+}
+
+// ////////////////////////////////////////////////////////
+std.argc = 3;
+std.args = new array(std.argc+1);
+std.args[0] = std.native2string("index.html");
+std.args[1] = std.native2string("dj.js");
+std.args[2] = std.native2string("yo.jack");
+std.args[3] = 0;
+
+
+main.main();
+</script></body></html>
+

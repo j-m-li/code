@@ -1,0 +1,22 @@
+Display adapter:
+GDEY075T7:
+FPC24(0.5MM)
+MBR0530 x3
+Si1308EDL
+0.47R
+10K
+10uH/1A
+4.7uF/25V x8
+1uF/50V x4
+
+PCM1808 (ADC)
+https://fr.aliexpress.com/item/32777376004.html
+https://fr.aliexpress.com/item/1005008885079639.html
+
+PCM5102A (DAC)
+https://fr.aliexpress.com/item/1005006323878361.html
+
+
+IP5310 (USB-C PMIC)
+https://fr.aliexpress.com/item/1005005136251671.html
+

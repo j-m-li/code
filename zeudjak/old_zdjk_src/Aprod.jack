@@ -1,0 +1,175 @@
+class Aprod {
+field Atoken tok;
+field Aprod next;
+field Aterm children;
+field Aterm current;
+field Aterm parenthesis;
+field int operation;
+
+const int Cnext := 0;
+const int Cor := 1;
+
+constructor Aprod new(in Atoken token)
+{
+	tok := token;
+	next := null;
+	children := null;
+	current := null;
+	parenthesis := null;
+	operation := Aprod.$Cnext;
+	return this;
+}
+
+method void dispose()
+{
+	// FIXME free children and data
+	std.free(this);
+	return;
+}
+
+method Aterm add_term(in Atoken t)
+{
+	var Aterm ter;
+	if (current != null) {
+		ter := Aterm.new(t, current.get_parent());
+		current.set_next(ter);	
+	} else if (parenthesis != null) {
+		ter := Aterm.new(t, parenthesis);
+		parenthesis.set_child(ter);
+		parenthesis := null;	
+	} else {
+		ter := Aterm.new(t, null);
+		children := ter;
+	}
+	operation := Aprod.$Cnext;
+	current := ter;
+	return ter;
+}
+
+method Aterm add_nonterminal(in Atoken t)
+{
+	add_term(t);
+	return;
+}
+
+method Aterm add_terminal(in Atoken t)
+{
+	add_term(t);
+	current.set_type(Aterm.$Cterminal);
+	return;
+}
+
+method Aterm add_any()
+{
+	current.set_type(Aterm.$Cany);
+	return;
+}
+
+method Aterm add_maybe()
+{
+	current.set_type(Aterm.$Cmaybe);
+	return;
+}
+
+method Aterm add_or()
+{
+	current.set_type(Aterm.$Cor);
+	return;
+}
+
+method Aterm open_parenthesis(in Atoken t)
+{
+	add_term(t);
+	current.set_type(Aterm.$Cparenthesis);
+	parenthesis := current;
+	current := null;
+	return;
+}
+
+method Aterm close_parenthesis()
+{
+	current := current.close_parenthesis();
+	return;
+}
+
+method Atoken get_token()
+{
+	return tok;
+}
+
+method void set_next(in Aprod n)
+{
+	next := n;
+	return;
+}
+
+method Aprod get_next()
+{
+	return next;
+}
+
+method Aterm get_child()
+{
+	return children;
+}
+
+method void set_child(in Aterm child)
+{
+	children := child;
+	return;
+}
+
+method void pad(in int p)
+{
+	while (p > 0) {
+		p := p - 1;
+		console.log_str("\t");
+	}
+	return;
+}
+
+method void dump(in int depth)
+{
+	var string s;
+	if (this == null) {
+		return;
+	}
+	if (tok != null) {
+		s := tok.get_data();
+	} else {
+		s := "";
+	}
+	pad(depth);
+	console.log_int(this);
+	console.log_str(" ");
+	console.log(s);
+	pad(depth);
+	console.log("C");
+	if (children != null) {
+		children.dump(depth + 1);
+	}
+	return;
+}
+/*
+method void gen(in int depth, io string out_, io Aemmit emmi_)
+{
+	var string s;
+	if (this == null) {
+		return;
+	}
+	if (tok != null) {
+		s := tok.get_data();
+	} else {
+		s := "";
+	}
+	pad(depth);
+	console.log(s);
+	if (children != null) {
+		children.gen(depth + 1, out_, emmi_);
+	}
+	return;
+}
+*/
+
+
+} // class

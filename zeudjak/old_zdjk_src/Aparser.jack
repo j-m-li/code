@@ -1,0 +1,374 @@
+class Aparser {
+field buffer _states;
+field buffer tokens;
+field Atoken lookahead;
+field string lookstring;
+field int status;
+field buffer _prods;
+field Aprod current_prod;
+
+const int Croot := 1;
+const int Cblankline := 2;
+const int Cproduction := 3;
+const int Cproduction1 := 4;
+const int Cproduction2 := 5;
+
+const int Cbody := 7;
+const int Cterm := 8;
+
+const int Cmaybe := 11;
+
+const int Cparenthesis := 18;
+const int Cparenthesis1 := 19;
+const int Cparenthesis2 := 20;
+const int Cparenthesis3 := 21;
+
+
+constructor Aparser new()
+{
+	status := 0;
+	_states := buffer.new(8);
+	_prods := buffer.new(8);
+	current_prod := null;
+	return this;
+}
+
+method void dispose()
+{
+	_states.dispose();
+	std.free(this);
+	return;
+}
+
+method string get_data()
+{
+	return lookstring;
+}
+
+method Aprod get_next()
+{
+	return _prods.shift();
+}
+
+method int parse(in Alexer lexer_)
+{
+	tokens := lexer_.get_pool();
+	while (tokens.empty() == 0) {
+		lookahead := tokens.get_at(0);
+		lookstring := lookahead.get_data();
+		state_machine();
+	}
+	return 0;
+}
+
+method void error(in string e)
+{
+	console.log_str(lookahead.get_data());
+	console.log_int(lookahead.get_type());
+	console.log(e);
+	std.exit(-1);
+	return;
+}
+
+method void push(in int step_)
+{
+	_states.push(step_);
+	return;
+}
+
+
+method void pop()
+{
+	_states.pop();
+	return;
+}
+
+method int root()
+{
+	console.log("ROOT");
+	console.log(lookstring);
+	if (status == 0) {
+		if (match_newline() != 0) {
+			eat();
+		} else if (lookahead.get_type() == Alexer.$Cend) {
+			eat();
+			return 0;
+		} else {
+			push(Aparser.$Cproduction2);
+			push(Aparser.$Cproduction1);
+			push(Aparser.$Cproduction);
+		}
+	}
+	return 0;
+}
+
+method int production()
+{
+	console.log_int(_states.get_last());
+	console.log("PROD");
+	//console.log_str(lookahead.get_data());
+	console.log_int(lookahead.get_type());
+	if (match_id() != 0) {
+		current_prod := Aprod.new(lookahead);
+		_prods.push(current_prod);
+		pop();
+		eat();
+		return 0;
+	}
+	error("identifier expected");
+	return 0;
+}
+
+method int production1()
+{
+	console.log("PROD1");
+	if (match_op(":") != 0) {
+		console.log(lookstring);
+		pop();
+		eat();
+		return 0;
+	}
+	error("':' expected. ");
+	return 0;
+}
+
+method int production2()
+{
+	console.log("PROD2");
+	console.log(lookstring);
+	pop();
+	push(Aparser.$Cbody);
+	return 0;
+}
+
+
+method int blankline()
+{
+	console.log(lookstring);
+	console.log("ENOF");
+	if (match_newline() == 1) {
+		pop();
+		pop(); // end of body
+		eat();
+		status := 0;
+		return 0;
+	} else {
+		pop();
+		status := 0;
+	}
+	return 0;
+}
+
+method int body()
+{
+	console.log("BODY");
+	if (status == 0) {
+		push(Aparser.$Cmaybe);
+		push(Aparser.$Cterm);
+		return 0;
+	} else if (status > 0) {
+		if (match_newline() != 0) {
+			eat();
+			push(Aparser.$Cblankline);
+			return 0;
+		}
+		pop();
+		status := 0;
+		return 0;
+	} else {
+		error("Error in production body");
+	}
+	return 0;
+}
+
+method int term()
+{
+	console.log("TERM");
+	console.log(lookstring);
+	if (match_id() != 0) { // nonterminal
+		current_prod.add_nonterminal(lookahead);
+		pop();
+	} else if (match_str(null) != 0) { // terminal
+		current_prod.add_terminal(lookahead);
+		pop();
+	} else if (match_op("*") != 0) { // any
+		current_prod.add_any();
+		pop();
+	} else if (match_op("?") != 0) { // maybe
+		current_prod.add_maybe();
+		pop();
+	} else if (match_op("|") != 0) { // or
+		current_prod.add_or();
+		pop();
+		push(Aparser.$Cterm);
+	} else if (match_op("(") != 0) { // parenthesis
+		current_prod.open_parenthesis(lookahead);
+		pop();
+		push(Aparser.$Cparenthesis3);
+		push(Aparser.$Cparenthesis2);
+		push(Aparser.$Cparenthesis1);
+	//	push(Aparser.$Cparenthesis);
+	} else {
+		pop();
+		status := -1;
+		return 0;
+	}
+	eat();
+	return 0;
+}
+
+method int parenthesis()
+{
+	return 0;
+}
+
+method int parenthesis1()
+{
+	console.log("PARENT1");
+	pop();
+	push(Aparser.$Cterm);
+	return 0;
+}
+
+method int parenthesis2()
+{
+	console.log("PARENT2");
+	// FIXME not follow grammar
+	if (status == 0) {
+		push(Aparser.$Cmaybe);
+		push(Aparser.$Cterm);
+	} else if (status > 0) {
+		pop();
+		status := 0;	
+		
+	} else {
+		error("Term expected !!");
+	}
+	return 0;
+}
+
+method int parenthesis3()
+{
+	console.log("PARENT3");
+	if (status != 0) {
+		error("Term expected");
+	}
+	if (match_op(")") != 0) { 
+		current_prod.close_parenthesis();
+		pop();
+		eat();
+		return 0;
+	}
+	error("Missing ')' ");
+	return 0;
+}
+
+method int maybe()
+{
+	console.log("MAYBE");
+	if (status == -1) {
+		status := 1;
+	}
+	pop();
+	return 0;
+}
+
+method void eat()
+{
+	//_states.set_last(next_state_);
+	console.log(lookstring);
+	tokens.shift();
+	return;
+}
+
+method int state_machine()
+{
+	var int state;
+
+	state := _states.get_last();
+	
+	if (state == Aparser.$Croot) {
+		return root();
+	} else if (state == Aparser.$Cblankline) {
+		return blankline();
+	} else if (state == Aparser.$Cproduction) {
+		return production();
+	} else if (state == Aparser.$Cproduction1) {
+		return production1();
+	} else if (state == Aparser.$Cproduction2) {
+		return production2();
+	} else if (state == Aparser.$Cbody) {
+		return body();
+	} else if (state == Aparser.$Cterm) {
+		return term();
+	} else if (state == Aparser.$Cmaybe) {
+		return maybe();
+	} else if (state == Aparser.$Cparenthesis) {
+		return parenthesis();
+	} else if (state == Aparser.$Cparenthesis1) {
+		return parenthesis1();
+	} else if (state == Aparser.$Cparenthesis2) {
+		return parenthesis2();
+	} else if (state == Aparser.$Cparenthesis3) {
+		return parenthesis3();
+	} else {
+		//console.log(lookstring);
+		if (match_id() != 0) {
+			if (lookstring.compare("root") == 0) {
+				_states.push(Aparser.$Croot);
+			} else {
+				tokens.shift();
+			}
+			return 1;	
+		} else {
+			tokens.shift();
+		}
+	}
+	return 1;
+}
+
+method int match_id()
+{
+	if (lookahead.get_type() != Alexer.$Cidentifier) {
+		return 0;
+	}
+	return 1;
+}
+
+method int match_op(in string id)
+{
+	if (lookahead.get_type() != Alexer.$Coperator) {
+		return 0;
+	}
+	if (lookstring.compare(id) == 0) {
+		return 1;
+	}
+	return 0;
+}
+
+method int match_newline()
+{
+	if (lookahead.get_type() == Alexer.$Cnewline) {
+		return 1;
+	}
+	return 0;
+}
+
+method int match_str(in string id)
+{
+	var int t;
+	
+	t := lookahead.get_type();
+	if ((t != Alexer.$Cstring) && (t != Alexer.$Cquote)) {
+		return 0;
+	}
+	if ((id == null) || (lookstring.compare(id) == 0)) {
+		return 1;
+	}
+	return 0;
+}
+
+
+
+} // class
+

@@ -1,0 +1,3 @@
+# TRIP
+Ternary programming language
+

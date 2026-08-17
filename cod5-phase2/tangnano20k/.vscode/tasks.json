@@ -1,0 +1,174 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "compile tangnano20k ternary",
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+              },
+            "windows": {
+                "command": "C:\\Gowin\\Gowin_V1.9.9.03_Education_x64\\IDE\\bin\\gw_sh.exe",
+                "args": [
+                    "../tangnano20k/cod5.tcl"
+                ]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/../bin/"
+            }
+        },
+        {
+            "label": "compile tangnano20k mips",
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+              },
+            "windows": {
+                "command": "C:\\Gowin\\Gowin_V1.9.9.03_Education_x64\\IDE\\bin\\gw_sh.exe",
+                "args": [
+                    "../tangnano20k/mips.tcl"
+                ]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/../bin/"
+            }
+        },
+        {
+            "label": "flash tangnano20k",
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+              },
+            "windows": {
+                "command": "C:\\Gowin\\Gowin_V1.9.9.03_Education_x64\\programmer\\bin\\programmer.exe",
+                "args": [
+                    "-fsFile",
+                    "${workspaceFolder}/../bin/impl/pnr/project.fs"
+                ]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/../bin/"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "compile tangnano20k mips"
+            ]
+        },
+        {
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+              },
+            "windows": {
+                "command": "..\\build.cmd",
+                "args": [
+                    "../common",
+                    "all cod5"
+                ],
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/../bin/"
+            },
+            "label": "make common",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+            ]
+        },
+        {
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+              },
+            "command": "echo done flashing",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/../bin"
+            },
+            "label": "flash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "flash tangnano20k"
+            ]
+        },
+        {
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+              },
+            "command": "echo done",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/../bin"
+            },
+            "label": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "make common",
+                "compile tangnano20k"
+            ]
+        },
+        {
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+              },
+            "windows" : {
+                "command": "..\\build.cmd",
+                "args": ["..\\common", "monitor"]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/../bin"
+            },
+            "label": "monitor",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+            ]
+        },
+        {
+            "type": "shell",
+            "presentation": {
+                "echo": true,
+                "focus": true,
+                "reveal": "always",
+                "panel": "shared",
+              },
+            "windows" : {
+                "command": "..\\build.cmd",
+                "args": ["..\\common", "monitor"]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/../bin"
+            },
+            "label": "all",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "make common",
+                "compile tangnano20k",
+                "flash tangnano20k"
+            ]
+        }
+    ]
+}

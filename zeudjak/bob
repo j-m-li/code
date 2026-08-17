@@ -1,0 +1,12 @@
+// com jkj
+
+root: test1 | test2 
+
+
+test: mix1 | toy2 | bob3 | kik4 | tpt5 oui6 noi7 ouz8
+
+test1: mix1 | toy2 | bob3 | kik4 | tpt5 oui6? noi7* miore8 mou9
+
+test3: one ( two three four)* five
+	secondline heroo
+

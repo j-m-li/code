@@ -1,0 +1,370 @@
+grammar.txt
+method int root()
+{
+	var int r;
+	r := 0;
+class_dec
+	return r;
+}
+
+method int class_dec()
+{
+	var int r;
+	r := 0;
+classclass_name{class_var_dec*clas_const_dec*subroutine_dec*}
+	return r;
+}
+
+method int class_var_dec()
+{
+	var int r;
+	r := 0;
+(static|field)typevar_name(,var_name)*;
+	return r;
+}
+
+method int clas_const_dec()
+{
+	var int r;
+	r := 0;
+consttypevar_name:=constant;
+	return r;
+}
+
+method int type()
+{
+	var int r;
+	r := 0;
+int|char|class_name
+	return r;
+}
+
+method int subroutine_dec()
+{
+	var int r;
+	r := 0;
+(constructor|function|method|virtual)(void|type)subrout_name(param_list)subrout_body
+	return r;
+}
+
+method int param_list()
+{
+	var int r;
+	r := 0;
+((typevar_name)(,typevar_name)*)?
+	return r;
+}
+
+method int subrout_body()
+{
+	var int r;
+	r := 0;
+{var_dec*statements}
+	return r;
+}
+
+method int var_dec()
+{
+	var int r;
+	r := 0;
+vartypevar_name(,var_name)*;
+	return r;
+}
+
+method int class_name()
+{
+	var int r;
+	r := 0;
+identifier
+	return r;
+}
+
+method int subrout_name()
+{
+	var int r;
+	r := 0;
+identifier
+	return r;
+}
+
+method int var_name()
+{
+	var int r;
+	r := 0;
+identifier
+	return r;
+}
+
+method int statements()
+{
+	var int r;
+	r := 0;
+statement*
+	return r;
+}
+
+method int statement()
+{
+	var int r;
+	r := 0;
+let_statem|if_statem|while_statem|do_statem|return_statem|switch_statem
+	return r;
+}
+
+method int let_statem()
+{
+	var int r;
+	r := 0;
+var_name([expression])?:=expression;
+	return r;
+}
+
+method int do_statem()
+{
+	var int r;
+	r := 0;
+subrout_call
+	return r;
+}
+
+method int if_statem()
+{
+	var int r;
+	r := 0;
+if(bool_expr){statments}else_statem?
+	return r;
+}
+
+method int else_statem()
+{
+	var int r;
+	r := 0;
+else(({statements})|if_statem)
+	return r;
+}
+
+method int while_statem()
+{
+	var int r;
+	r := 0;
+while(bool_expr){statements}
+	return r;
+}
+
+method int return_statem()
+{
+	var int r;
+	r := 0;
+returnexpression?;
+	return r;
+}
+
+method int switch_statem()
+{
+	var int r;
+	r := 0;
+switch(expression){case_statemsdefault_statem}
+	return r;
+}
+
+method int case_statems()
+{
+	var int r;
+	r := 0;
+case_statem*
+	return r;
+}
+
+method int case_statem()
+{
+	var int r;
+	r := 0;
+caseconstant:statements*(break_statem|return_statem)
+	return r;
+}
+
+method int break_statem()
+{
+	var int r;
+	r := 0;
+break;
+	return r;
+}
+
+method int default_statem()
+{
+	var int r;
+	r := 0;
+default:statements*(break_statem|return_statem)
+	return r;
+}
+
+method int expression()
+{
+	var int r;
+	r := 0;
+term(opterm)*
+	return r;
+}
+
+method int bool_expr()
+{
+	var int r;
+	r := 0;
+bool_term(bool_opbool_term)*
+	return r;
+}
+
+method int bool_term()
+{
+	var int r;
+	r := 0;
+(expressioncomp_opexpression)|(not_op?(expressioncomp_opexpression))
+	return r;
+}
+
+method int term()
+{
+	var int r;
+	r := 0;
+int_const|str_const|char_const|tern_const|key_const|var_name|(var_name[expression])|subrout_call|((expression))|(unary_opterm)|(class_name.$var_name)
+	return r;
+}
+
+method int subrout_call()
+{
+	var int r;
+	r := 0;
+((class_name|var_name).sub_call)|sub_call
+	return r;
+}
+
+method int sub_call()
+{
+	var int r;
+	r := 0;
+subrout_name(expr_list)
+	return r;
+}
+
+method int expr_list()
+{
+	var int r;
+	r := 0;
+(expression(,expression)*)?
+	return r;
+}
+
+method int op()
+{
+	var int r;
+	r := 0;
+op14lr|op13lr
+	return r;
+}
+
+method int comp_op()
+{
+	var int r;
+	r := 0;
+op11lr|op10lr|op10rl
+	return r;
+}
+
+method int bool_op()
+{
+	var int r;
+	r := 0;
+op6lr|op5lr
+	return r;
+}
+
+method int op14lr()
+{
+	var int r;
+	r := 0;
+*|/|%
+	return r;
+}
+
+method int op13lr()
+{
+	var int r;
+	r := 0;
++|-
+	return r;
+}
+
+method int op11lr()
+{
+	var int r;
+	r := 0;
+>=|<=|>|<
+	return r;
+}
+
+method int op10lr()
+{
+	var int r;
+	r := 0;
+==
+	return r;
+}
+
+method int op10rl()
+{
+	var int r;
+	r := 0;
+!=
+	return r;
+}
+
+method int op6lr()
+{
+	var int r;
+	r := 0;
+&&
+	return r;
+}
+
+method int op5lr()
+{
+	var int r;
+	r := 0;
+||
+	return r;
+}
+
+method int unary_op()
+{
+	var int r;
+	r := 0;
+uop16rl
+	return r;
+}
+
+method int uop16rl()
+{
+	var int r;
+	r := 0;
++|-
+	return r;
+}
+
+method int not_op()
+{
+	var int r;
+	r := 0;
+nop16rl
+	return r;
+}
+
+method int nop16rl()
+{
+	var int r;
+	r := 0;
+!
+	return r;
+}
+
+

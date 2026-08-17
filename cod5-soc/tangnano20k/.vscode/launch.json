@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [      
+        {   "type": "node-terminal",
+            "name": "(Windows) all",
+            "request": "launch",
+            "preLaunchTask": "all",
+            "command": "echo done; exit;"
+        },
+        {   "type": "node-terminal",
+            "name": "(Windows) build",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "command": "echo done; exit;"
+        },         
+        {   "type": "node-terminal",
+            "name": "(Windows) flash",
+            "request": "launch",
+            "preLaunchTask": "flash",
+            "command": "echo done; exit;"
+        },         
+        {   "type": "node-terminal",
+            "name": "(Windows) monitor",
+            "request": "launch",
+            "preLaunchTask": "monitor",
+            "command": "exit"
+        }
+    ]
+}

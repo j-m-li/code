@@ -1,0 +1,71 @@
+/*
+ *                     jack public domain compiler
+ *
+ *                      15 may MMXXI PUBLIC DOMAIN
+ *           The author disclaims copyright to this source code.
+ *
+ *
+ */
+
+
+class Unit {
+	static int maxlevel;
+	static int failure;
+	static int over;
+	static int count;
+
+	function void setLevel(int l) {
+		let maxlevel := l;
+		do Unit.clear();
+		let over := 0;
+		let count := 0;
+		return;
+	}
+
+	function void clear() {
+		let failure := 0;
+	}
+
+	function void run(int level, String txt, int state) {
+		if (failure > 0) {
+			state := 0;
+		}
+		do Unit.log(level, txt, state);
+		do Unit.clear();
+	}
+
+	function void log(int level, String txt, int state) {
+		if (level > maxlevel) {
+			return;
+		}
+		let count := count + 1;
+		do Output.printString(txt);
+		do Output.printString("... ");
+		if (state) {
+			do Output.printString("\tpass");
+		} else if (20>=100) {
+			do Output.printString("PANIC!!!");
+		} else if (0==0) {
+			do Output.printString("\tfail");
+			let failure := failure + 1;
+			let over := over + 1;
+		} else {
+			do Output.printString("PANIC2!!!");
+		}
+		do Output.println();
+		return;
+	}
+
+	function void isOk() {
+		if (over == 0) {
+			do Output.printInt(count);
+			do Output.printString(" PASS");
+		} else {
+			do Output.printString("FAIL ");
+			do Output.printInt(over);
+			do Output.printString("/");
+			do Output.printInt(count);
+		}
+		do Output.printString("\n\n...");
+	}
+}

@@ -1,0 +1,36 @@
+
+nonterminal:	identifier	
+
+terminal:	'"' ascii* '"'
+
+blankline:	"\n\n"
+
+identifier:	(underscore | letter) (underscore | letter | digit)*
+
+
+root:		production*
+
+production:	identifier production1
+
+production1:	":" production2
+
+production2:	body
+
+
+body:		term*  blankline
+
+term:		"*" | 
+		"?" | 
+		("|" term) | 
+		terminal | 
+		nonterminal | 
+		("(" parenthesis1)
+
+parenthesis:	"(" parenthesis1
+
+parenthesis1:	term parenthesis2
+
+parenthesis2:	term* parenthesis3
+
+parenthesis3:	")"
+

@@ -1,0 +1,295 @@
+class Token {
+    constructor(type, value) {
+        this.type = type;
+        this.value = value;
+    }
+}
+
+class Tokenizer {
+    constructor(expression) {
+        this.expression = expression;
+        this.position = 0;
+        this.currentChar = this.expression[this.position];
+    }
+
+    advance() {
+        this.position++;
+        this.currentChar = this.position < this.expression.length ? this.expression[this.position] : null;
+    }
+
+    skipWhitespace() {
+        while (this.currentChar === ' ') {
+            this.advance();
+        }
+    }
+
+    getNumber() {
+        let number = '';
+        let hasDecimalPoint = false;
+
+        if (this.currentChar === '-') {
+            number += this.currentChar;
+            this.advance();
+        }
+
+        while (this.currentChar !== null && ((this.currentChar >= '0' && this.currentChar <= '9') || (this.currentChar === '.' && !hasDecimalPoint))) {
+            if (this.currentChar === '.') {
+                hasDecimalPoint = true;
+            }
+            number += this.currentChar;
+            this.advance();
+        }
+
+        return new Token('NUMBER', parseFloat(number));
+    }
+
+    getIdentifier() {
+        let identifier = '';
+        while (this.currentChar !== null && /[a-zA-Z_]/.test(this.currentChar)) {
+            identifier += this.currentChar;
+            this.advance();
+        }
+        return new Token('IDENTIFIER', identifier);
+    }
+
+    getNextToken() {
+        while (this.currentChar !== null) {
+            if (this.currentChar === ' ') {
+                this.skipWhitespace();
+                continue;
+            }
+
+            if ((this.currentChar >= '0' && this.currentChar <= '9') || this.currentChar === '-' && (this.position === 0 || this.expression[this.position - 1] === '(')) {
+                return this.getNumber();
+            }
+
+            if (/[a-zA-Z_]/.test(this.currentChar)) {
+                return this.getIdentifier();
+            }
+
+            const twoCharOps = {
+                '==': 'EQ',
+                '!=': 'NEQ',
+                '+=': 'PLUSEQ',
+                '-=': 'MINUSEQ',
+                '*=': 'MULEQ',
+                '/=': 'DIVEQ'
+            };
+            
+            const operatorMap = {
+                '+': 'PLUS',
+                '-': 'MINUS',
+                '*': 'MUL',
+                '/': 'DIV',
+                '=': 'ASSIGN',
+                '!': 'NOT',
+                '(': 'LPAREN',
+                ')': 'RPAREN'
+            };
+
+            const lookAhead = this.currentChar + (this.position + 1 < this.expression.length ? this.expression[this.position + 1] : '');
+            if (twoCharOps[lookAhead]) {
+                const token = new Token(twoCharOps[lookAhead], lookAhead);
+                this.advance();
+                this.advance();
+                return token;
+            }
+
+            if (operatorMap[this.currentChar]) {
+                const token = new Token(operatorMap[this.currentChar], this.currentChar);
+                this.advance();
+                return token;
+            }
+
+            throw new Error(`Unexpected character: ${this.currentChar}`);
+        }
+
+        return new Token('EOF', null);
+    }
+}
+
+class Parser {
+    constructor(expression) {
+        this.tokenizer = new Tokenizer(expression);
+        this.currentToken = this.tokenizer.getNextToken();
+
+        this.operatorPrecedence = {
+            'EQ': 0,
+            'NEQ': 0,
+            'ASSIGN': 0,
+            'PLUSEQ': 0,
+            'MINUSEQ': 0,
+            'MULEQ': 0,
+            'DIVEQ': 0,
+            'PLUS': 1,
+            'MINUS': 1,
+            'MUL': 2,
+            'DIV': 2,
+            'NOT': 3
+        };
+
+        this.operatorAssociativity = {
+            'EQ': 'LEFT',
+            'NEQ': 'LEFT',
+            'ASSIGN': 'RIGHT',
+            'PLUSEQ': 'RIGHT',
+            'MINUSEQ': 'RIGHT',
+            'MULEQ': 'RIGHT',
+            'DIVEQ': 'RIGHT',
+            'PLUS': 'LEFT',
+            'MINUS': 'LEFT',
+            'MUL': 'LEFT',
+            'DIV': 'LEFT',
+            'NOT': 'RIGHT'
+        };
+
+        this.operators = [];
+        this.operands = [];
+        this.variables = {};  // To store variable values
+    }
+
+    parse() {
+        while (this.currentToken.type !== 'EOF') {
+            if (this.currentToken.type === 'NUMBER') {
+                this.operands.push(this.currentToken.value);
+                this.eat('NUMBER');
+            } else if (this.currentToken.type === 'IDENTIFIER') {
+                this.operands.push(this.variables[this.currentToken.value] !== undefined ? this.variables[this.currentToken.value] : this.currentToken.value);
+                this.eat('IDENTIFIER');
+            } else if (this.currentToken.type === 'LPAREN') {
+                this.operators.push(this.currentToken);
+                this.eat('LPAREN');
+            } else if (this.currentToken.type === 'RPAREN') {
+                while (this.operators.length && this.operators[this.operators.length - 1].type !== 'LPAREN') {
+                    this.processOperator();
+                }
+                this.operators.pop();
+                this.eat('RPAREN');
+            } else if (this.currentToken.type in this.operatorPrecedence) {
+                while (this.operators.length &&
+                       (this.operatorAssociativity[this.currentToken.type] === 'LEFT'
+                        ? this.operatorPrecedence[this.operators[this.operators.length - 1].type] >= this.operatorPrecedence[this.currentToken.type]
+                        : this.operatorPrecedence[this.operators[this.operators.length - 1].type] > this.operatorPrecedence[this.currentToken.type])) {
+                    this.processOperator();
+                }
+                this.operators.push(this.currentToken);
+                this.eat(this.currentToken.type);
+            } else {
+                throw new Error(`Unexpected token: ${this.currentToken.type}`);
+            }
+        }
+
+        while (this.operators.length) {
+            this.processOperator();
+        }
+
+        return this.operands.pop();
+    }
+
+    eat(tokenType) {
+        if (this.currentToken.type === tokenType) {
+            this.currentToken = this.tokenizer.getNextToken();
+        } else {
+            throw new Error(`Unexpected token: ${this.currentToken.type}`);
+        }
+    }
+
+    processOperator() {
+        const operator = this.operators.pop();
+        const right = this.operands.pop();
+
+        if (operator.type === 'NOT') {
+            this.operands.push(!right);
+            return;
+        }
+
+        const left = this.operands.pop();
+
+        let result;
+        switch (operator.type) {
+            case 'EQ':
+                result = left == right;
+                break;
+            case 'NEQ':
+                result = left != right;
+                break;
+            case 'ASSIGN':
+                if (typeof left === 'string') {
+                    this.variables[left] = right;
+                    result = this.variables[left];
+                } else {
+                    throw new Error(`Invalid left-hand side in assignment: ${left}`);
+                }
+                break;
+            case 'PLUSEQ':
+                if (typeof left === 'string') {
+                    this.variables[left] += right;
+                    result = this.variables[left];
+                } else {
+                    throw new Error(`Invalid left-hand side in assignment: ${left}`);
+                }
+                break;
+            case 'MINUSEQ':
+                if (typeof left === 'string') {
+                    this.variables[left] -= right;
+                    result = this.variables[left];
+                } else {
+                    throw new Error(`Invalid left-hand side in assignment: ${left}`);
+                }
+                break;
+            case 'MULEQ':
+                if (typeof left === 'string') {
+                    this.variables[left] *= right;
+                    result = this.variables[left];
+                } else {
+                    throw new Error(`Invalid left-hand side in assignment: ${left}`);
+                }
+                break;
+            case 'DIVEQ':
+                if (typeof left === 'string') {
+                    this.variables[left] /= right;
+                    result = this.variables[left];
+                } else {
+                    throw new Error(`Invalid left-hand side in assignment: ${left}`);
+                }
+                break;
+            case 'PLUS':
+                result = left + right;
+                break;
+            case 'MINUS':
+                result = left - right;
+                break;
+            case 'MUL':
+                result = left * right;
+                break;
+            case 'DIV':
+                result = left / right;
+                break;
+            default:
+                throw new Error(`Unknown operator: ${operator.type}`);
+        }
+
+        this.operands.push(result);
+    }
+}
+
+// Example usage:
+let parser = new Parser("x = 3 + 5 * (2 - 8)");
+console.log(parser.parse());  // Output: -13
+console.log(parser.variables);  // Output: { x: -13 }
+
+parser = new Parser("y = -3 + 5 * (-2 - 8)");
+console.log(parser.parse());  // Output: -53
+console.log(parser.variables);  // Output: { x: -13, y: -53 }
+
+parser = new Parser("z = x + y");
+console.log(parser.parse());  // Output: -66
+console.log(parser.variables);  // Output: { x: -13, y: -53, z: -66 }
+
+parser = new Parser("x += 10");
+console.log(parser.parse());  // Output: -3
+console.log(parser.variables);  // Output: { x: -3, y: -53, z: -66 }
+
+parser = new Parser("a = 10");
+console.log(parser.parse());  // Output: 10
+
